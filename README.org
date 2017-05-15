@@ -11,6 +11,3 @@ It is heavely influenced by ...
 
 To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/neilfigg/.emacs.d/blob/master/init.org][init.org]] and run =M-x org-babel-tangle= (=C-c C-v t=)
 
-[[https://github.com/bbatsov/solarized-emacs][h]]
-
-https://github.com/bbatsov/solarized-emacs
