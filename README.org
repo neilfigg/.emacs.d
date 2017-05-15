@@ -1,2 +1,13 @@
-# .emacs.d
-Neil's Clojure centric Emacs config
+This is my Clojure centric configuration file for GNU Emacs, using literal programming with org-babel.
+
+It is heavely influenced by ...
+
+[[https://github.com/bbatsov/emacs.d/blob/master/init.el][Bozhidar Batsov]]
+[[https://github.com/cichli/dotfiles/blob/master/.emacs.d/init.el][Michael Griffiths]]
+[[https://raw.githubusercontent.com/sachac/.emacs.d/gh-pages/Sacha.org][Sacha Chua]]
+[[https://github.com/credmp/emacs-config][Arjen Wiersma]]
+[[https://github.com/flyingmachine/emacs-for-clojure/][Daniel Higginbotham]]
+[[https://github.com/plexus/.emacs.d][plexuz]]
+
+To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/neilfigg/.emacs.d][init.org]] and run =M-x org-babel-tangle= (=C-c C-v t=)
+
