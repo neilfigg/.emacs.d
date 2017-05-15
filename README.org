@@ -7,7 +7,7 @@ It is heavely influenced by ...
 [[https://raw.githubusercontent.com/sachac/.emacs.d/gh-pages/Sacha.org][Sacha Chua]]
 [[https://github.com/credmp/emacs-config][Arjen Wiersma]]
 [[https://github.com/flyingmachine/emacs-for-clojure/][Daniel Higginbotham]]
-[[https://github.com/plexus/.emacs.d][plexuz]]
+[[https://github.com/plexus/.emacs.d][plexus]]
 
-To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/neilfigg/.emacs.d][init.org]] and run =M-x org-babel-tangle= (=C-c C-v t=)
+To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/neilfigg/.emacs.d/blob/master/init.org][init.org]] and run =M-x org-babel-tangle= (=C-c C-v t=)
 
