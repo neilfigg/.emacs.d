@@ -1,0 +1,793 @@
+#+TITLE: Neil Figg's Emacs configuration
+#+OPTIONS: toc:4 h:4
+#+PROPERTY: header-args :tangle yes
+
+* About
+This is my Clojure centric configuration file for GNU Emacs, using literal programming with org-babel.
+
+It is heavely influenced by ...
+
+[[https://github.com/bbatsov/emacs.d/blob/master/init.el][Bozhidar Batsov]]
+[[https://github.com/cichli/dotfiles/blob/master/.emacs.d/init.el][Michael Griffiths]]
+[[https://raw.githubusercontent.com/sachac/.emacs.d/gh-pages/Sacha.org][Sacha Chua]]
+[[https://github.com/credmp/emacs-config][Arjen Wiersma]]
+[[https://github.com/flyingmachine/emacs-for-clojure/][Daniel Higginbotham]]
+[[https://github.com/plexus/.emacs.d][plexuz]]
+
+To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/neilfigg/.emacs.d][init.org]] and run =M-x org-babel-tangle= (=C-c C-v t=)
+
+** Personal
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq user-full-name "Neil Figg")
+  (setq user-mail-address "neil.figg@gmail.com")
+#+END_SRC
+
+* Setup Packages
+
+The following package archives are used:
+
+ - gnu
+ - melpa-stable
+ - melpa
+ - org-elpa
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (require 'package)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defvar gnu '("gnu" . "https://elpa.gnu.org/packages/"))
+  (defvar melpa '("melpa" . "https://melpa.org/packages/"))
+  (defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
+  (defvar org-elpa '("org" . "http://orgmode.org/elpa/"))
+
+  ;; Add marmalade to package repos
+  (setq package-archives nil)
+  (add-to-list 'package-archives melpa-stable t)
+  (add-to-list 'package-archives melpa t)
+  (add-to-list 'package-archives gnu t)
+  (add-to-list 'package-archives org-elpa t)
+#+end_src
+
+Initialise the archive and refresh the contents in case there is no cached archive.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;;(setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
+
+  (package-initialize)
+
+  (unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
+               (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
+               (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable")))
+    (package-refresh-contents))
+#+END_SRC
+
+ At each load the package list will be evaluated and any missing
+ packages will be installed. The packages-install function deals with
+ this check and takes care of any loading of the packages.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defun packages-install (&rest packages)
+    (message "running packages-install")
+    (mapc (lambda (package)
+            (let ((name (car package))
+                  (repo (cdr package)))
+              (when (not (package-installed-p name))
+                (let ((package-archives (list repo)))
+                  (package-initialize)
+                  (package-install name)))))
+          packages)
+    (package-initialize)
+    (delete-other-windows))
+#+end_src
+
+ Setup use-package
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  ;; Install extensions if they're missing
+  (defun init--install-packages ()
+    (message "Installing packages")
+    (packages-install
+     ;; Since use-package this is the only entry here
+     ;; ALWAYS try to use use-package!
+     (cons 'use-package melpa)
+     ))
+
+  (condition-case nil
+      (init--install-packages)
+    (error
+     (package-refresh-contents)
+     (init--install-packages)))
+#+end_src
+
+* Clojure
+
+The clojure ecosystem for GNU Emacs consists out of CIDER and bunch of
+supporting modules.
+
+*** package-cider
+#+BEGIN_SRC emacs-lisp :tangle yes
+ (use-package cider
+  :ensure t
+  :config
+ ;; (diminish-major 'cider-repl-mode nil)
+ ;; (diminish-major 'cider-stacktrace-mode nil)
+ ;; (diminish-major 'nrepl-messages-mode nil)
+
+  (setq cider-auto-select-error-buffer t
+        cider-macroexpansion-print-metadata t
+        cider-mode-line nil
+        cider-pprint-fn 'puget
+        cider-prompt-for-symbol nil
+        cider-repl-display-help-banner nil
+        cider-repl-history-file (concat user-emacs-directory ".cider-history")
+        cider-repl-history-size 1000
+        cider-repl-pop-to-buffer-on-connect nil
+        cider-repl-use-clojure-font-lock t
+        cider-repl-use-pretty-printing t
+        cider-repl-wrap-history t
+        cider-show-error-buffer 'always
+        nrepl-buffer-name-show-port t
+        nrepl-log-messages t
+        nrepl-message-buffer-max-size 100000000)
+
+  ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
+  (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
+
+  (add-hook 'cider-inspector-mode-hook 'hide-trailing-whitespace)
+  (add-hook 'cider-mode-hook 'enable-eldoc-mode)
+  (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
+  (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
+  (add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
+  (add-hook 'cider-repl-mode-hook 'hide-trailing-whitespace)
+)
+
+#+end_src
+
+*** package clojure-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package clojure-mode
+  :ensure t
+  :config
+  ;;(diminish-major 'clojure-mode "clj")
+  (add-hook 'clojure-mode-hook 'enable-clj-refactor-mode)
+  (add-hook 'clojure-mode-hook 'enable-paredit-mode)
+  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
+)
+#+end_src
+
+*** package clj-refactor
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package clj-refactor
+  :ensure t
+  :commands
+  enable-clj-refactor-mode
+  :config
+  (setq cljr-eagerly-build-asts-on-startup nil
+        cljr-eagerly-cache-macro-occurrences-on-startup nil
+        cljr-favor-prefix-notation nil
+        cljr-magic-requires nil)
+  (defun enable-clj-refactor-mode ()
+    (interactive)
+    (clj-refactor-mode 1)
+    (diminish 'clj-refactor-mode)
+(cljr-add-keybindings-with-prefix "C-c r")))
+#+end_src
+
+*** package cider-interaction
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package cider-interaction
+  :ensure t
+  :config
+  (add-hook 'cider-clojure-interaction-mode-hook
+            (lambda ()
+              (unbind-key "C-j" cider-clojure-interaction-mode-map)
+              (unbind-key "<remap> <paredit-newline>" cider-clojure-interaction-mode-map))))
+#+end_src
+
+*** package ac-cider : auto-complete
+#+BEGIN_SRC emacs-lisp :tangle no
+(require 'ac-cider)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-setup)
+(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+(eval-after-load "auto-complete"
+  '(progn
+     (add-to-list 'ac-modes 'cider-mode)
+     (add-to-list 'ac-modes 'cider-repl-mode)))
+#+end_src
+
+* Packages
+*** package aggerssive-indent-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package aggressive-indent
+    :ensure t
+    :config
+(add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+#+END_SRC
+
+*** package eldoc :
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package eldoc
+  :commands
+  enable-eldoc-mode
+  :config
+  (diminish 'eldoc-mode)
+  (setq eldoc-idle-delay 0)
+
+  (defun enable-eldoc-mode ()
+    (interactive)
+    (eldoc-mode 1)))
+#+END_SRC
+
+*** package projectile
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package projectile
+  :config
+  (projectile-global-mode 1)
+  (diminish 'projectile-mode)
+  (setq projectile-cache-file (concat user-emacs-directory "projectile/cache")
+        projectile-known-projects-file (concat user-emacs-directory "projectile/bookmarks.eld")
+        projectile-use-git-grep t
+        projectile-switch-project-action 'projectile-dired))
+#+END_SRC
+*** package s : String manipulation routines for emacs lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package s
+    :ensure t)
+#+END_SRC
+
+*** package Hydras : Check out [[https://github.com/abo-abo/hydra][the project page]] for some great examples.
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package hydra
+    :ensure t)
+#+END_SRC
+
+*** package hideshow : Code Folding
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package hideshow
+    :ensure t
+    :bind (("C->" . my-toggle-hideshow-all)
+           ("C-<" . hs-hide-level)
+           ("C-;" . hs-toggle-hiding))
+    :config
+    ;; Hide the comments too when you do a 'hs-hide-all'
+    (setq hs-hide-comments nil)
+    ;; Set whether isearch opens folded comments, code, or both
+    ;; where x is code, comments, t (both), or nil (neither)
+    (setq hs-isearch-open 'x)
+    ;; Add more here
+
+
+    (setq hs-set-up-overlay
+          (defun my-display-code-line-counts (ov)
+            (when (eq 'code (overlay-get ov 'hs))
+              (overlay-put ov 'display
+                           (propertize
+                            (format " ... <%d>"
+                                    (count-lines (overlay-start ov)
+                                                 (overlay-end ov)))
+                            'face 'font-lock-type-face)))))
+
+    (defvar my-hs-hide nil "Current state of hideshow for toggling all.")
+         ;;;###autoload
+    (defun my-toggle-hideshow-all () "Toggle hideshow all."
+           (interactive)
+           (setq my-hs-hide (not my-hs-hide))
+           (if my-hs-hide
+               (hs-hide-all)
+             (hs-show-all)))
+
+    (add-hook 'prog-mode-hook (lambda ()
+                                (hs-minor-mode 1)
+                                ))
+    (add-hook 'clojure-mode-hook (lambda ()
+                                (hs-minor-mode 1)
+                                ))
+    )
+#+END_SRC
+
+*** package paredit & rainbow-delimeters : LISP Editing
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package paredit
+    :ensure t
+   ;; :diminish paredit-mode
+    :config
+    (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+    (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+    (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+    (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+    :bind (("C-c d" . paredit-forward-down))
+    )
+
+  ;; Ensure paredit is used EVERYWHERE!
+  (use-package paredit-everywhere
+    :ensure t
+    :diminish paredit-everywhere-mode
+    :config
+    (add-hook 'prog-mode-hook #'paredit-everywhere-mode))
+
+  (use-package highlight-parentheses
+    :ensure t
+    :diminish highlight-parentheses-mode
+    :config
+    (add-hook 'emacs-lisp-mode-hook
+              (lambda()
+                (highlight-parentheses-mode)
+                )))
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (add-hook 'lisp-mode-hook
+              (lambda()
+                (rainbow-delimiters-mode)
+                )))
+
+  (global-highlight-parentheses-mode)
+#+END_SRC
+
+*** package yasnippets : Snippets
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package yasnippet
+    :ensure t
+    :diminish yas
+    :config
+    (yas/global-mode 1)
+    (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "snippets")))
+
+  (use-package clojure-snippets
+    :ensure t)
+#+END_SRC
+
+*** package company : Auto completion
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package company
+  :config
+  (global-company-mode 1)
+  (diminish 'company-mode)
+  (setq company-idle-delay nil
+        company-minimum-prefix-length 0
+        company-selection-wrap-around t
+        company-tooltip-align-annotations t
+        company-tooltip-limit 16
+        company-require-match nil)
+  (bind-key "C-q" #'company-show-doc-buffer company-active-map)
+  :bind
+(("C-<tab>" . company-complete)))
+#+END_SRC
+*** package magit
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package magit
+    :config
+    (global-set-key (kbd "C-c m") 'magit-status))
+
+  (defun iwb ()
+    "indent whole buffer"
+    (interactive)
+    (delete-trailing-whitespace)
+    (indent-region (point-min) (point-max) nil)
+    (untabify (point-min) (point-max)))
+
+  (global-set-key (kbd "C-c n") 'iwb)
+
+  (electric-pair-mode t)
+#+end_src
+
+*** package restclient : REST support
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package restclient
+    :ensure t)
+#+END_SRC
+
+*** project-shells : multiple shells
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package project-shells
+    :ensure t
+    :config
+  (global-project-shells-mode)
+  (setf project-shells-setup
+ `(("redplan" .
+    (("0" .
+      ("build" "~/data/projects/redplan"))
+     ("9" .
+      ("files" "~/data/data/files"))
+     ("8" .
+      ("redplan" "~/data/projects/redplan")))))))
+#+END_SRC
+*** package dash
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package dash
+    :ensure t)
+#+END_SRC
+
+*** package bm - Bookmarks for quickly jumping around files
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package bm
+    :ensure t
+    :bind (("C-c =" . bm-toggle)
+           ("C-c [" . bm-previous)
+           ("C-c ]" . bm-next)))
+#+END_SRC
+
+*** package swiper ivy counsel
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package counsel
+    :ensure t
+    :bind
+    (("M-x" . counsel-M-x)
+     ("M-y" . counsel-yank-pop)
+     :map ivy-minibuffer-map
+     ("M-y" . ivy-next-line)))
+
+   (use-package swiper
+     :pin melpa-stable
+     :diminish ivy-mode
+     :ensure t
+     :bind*
+     (("C-s" . swiper)
+      ("C-c C-r" . ivy-resume)
+      ("C-x C-f" . counsel-find-file)
+      ("C-c h f" . counsel-describe-function)
+      ("C-c h v" . counsel-describe-variable)
+      ("C-c i u" . counsel-unicode-char)
+      ("M-i" . counsel-imenu)
+      ("C-c g" . counsel-git)
+      ("C-c j" . counsel-git-grep)
+      ("C-c k" . counsel-ag)
+      ("C-c l" . scounsel-locate))
+     :config
+     (progn
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq ivy-display-style 'fancy)
+       (define-key read-expression-map (kbd "C-r") #'counsel-expression-history)
+       (ivy-set-actions
+        'counsel-find-file
+        '(("d" (lambda (x) (delete-file (expand-file-name x)))
+           "delete"
+           )))
+       (ivy-set-actions
+        'ivy-switch-buffer
+        '(("k"
+           (lambda (x)
+             (kill-buffer x)
+             (ivy--reset-state ivy-last))
+           "kill")
+          ("j"
+           ivy--switch-buffer-other-window-action
+           "other window")))))
+
+  (use-package counsel-projectile
+    :ensure t
+    :config
+    (counsel-projectile-on))
+
+  (use-package ivy-hydra :ensure t)
+#+END_SRC
+*** package which-key
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package which-key
+    :ensure t
+    :diminish which-key-mode
+    :config
+    (which-key-mode))
+#+END_SRC
+*** package ace-window ace-jump-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package ace-window
+    :ensure t
+    :config
+    (global-set-key (kbd "C-x o") 'ace-window))
+
+  (use-package ace-jump-mode
+    :ensure t
+    :config
+    (define-key global-map (kbd "C-c SPC") 'ace-jump-mode))
+#+end_src
+* Functions
+*** fn Ask for y/n instead of yes/no.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+*** fn highlight the current line
+#+BEGIN_SRC emacs-lisp :tangle yes
+(global-hl-line-mode +1)
+#+END_SRC
+*** fn expand region
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+#+END_SRC
+*** fn Kill the current buffer [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs]]
+#+BEGIN_SRC emacs-lisp :tangle yes
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+#+end_src
+*** fn Kill all the buffers (see if projectile does this)
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defun nuke-all-buffers ()
+    (interactive)
+    (mapcar 'kill-buffer (buffer-list))
+    (delete-other-windows))
+#+END_SRC
+*** fn show or hide menu-bar tool-bar scroll-bar blinking cursor
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (blink-cursor-mode -1)
+  (menu-bar-mode 1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+end_src
+*** fn mouse wheel scrolling
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+(setq mouse-wheel-progressive-speed nil)
+#+end_src
+*** fn deleting files
+#+BEGIN_SRC emacs-lisp :tangle yes
+ (setq delete-by-moving-to-trash t
+          trash-directory "~/.Trash/emacs")
+#+end_src
+*** fn don't open files from the workspace in a new frame
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq ns-pop-up-frames nil)
+#+end_src
+*** fn inhibit-startup-message
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (setq inhibit-startup-message t)
+#+end_src
+
+*** fn show line numbers
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (global-linum-mode)
+#+end_src
+*** fn display line and columns numbers
+#+BEGIN_SRC emacs-lisp :tangle yes
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
+#+end_src
+
+*** fn live coding
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package command-log-mode
+    :ensure t)
+
+  (defun live-coding ()
+    (interactive)
+    (set-face-attribute 'default nil :font "Hack-20")
+    (add-hook 'prog-mode-hook 'command-log-mode)
+    ;;(add-hook 'prog-mode-hook (lambda () (focus-mode 1)))
+    )
+#+END_SRC
+
+*** fn delete region with keypress
+#+BEGIN_SRC emacs-lisp :tangle yes
+(delete-selection-mode t)
+#+END_SRC
+
+*** fn Newline at end of file
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq require-final-newline t)
+#+END_SRC
+
+*** fn org indent after load
+#+BEGIN_SRC emacs-lisp :tangle yes
+   (eval-after-load "org-indent" '(diminish 'org-indent-mode))
+#+END_SRC
+
+*** fn turn off the bell
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (defun my-bell-function ())
+
+  (setq ring-bell-function 'my-bell-function)
+  (setq visible-bell nil)
+#+END_SRC
+
+*** fn wrap text around when in text-modes. Also enable flyspell to catch nasty writing errors.
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (dolist (hook '(text-mode-hook))
+    (add-hook hook (lambda ()
+                     (flyspell-mode 1)
+                     (visual-line-mode 1)
+                     )))
+#+END_SRC
+
+*** fn global-prettify-symbols-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (global-prettify-symbols-mode 1)
+#+END_SRC
+
+*** fn cider-hydra Retrieve the Cider-Hydra package from [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]].
+#+BEGIN_SRC emacs-lisp :tangle no
+;; #+BEGIN_SRC shell :exports none
+  wget https://raw.githubusercontent.com/clojure-emacs/cider-hydra/master/cider-hydra.el
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (load-library (concat user-emacs-directory "cider-hydra.el"))
+  (require 'cider-hydra)
+#+END_SRC
+
+*** fn desktop-save-mode
+#+BEGIN_SRC emacs-lisp :tangle no
+(desktop-save-mode 1)
+#+END_SRC
+
+*** Allow pasting selection outside of Emacs
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq x-select-enable-clipboard t)
+#+END_SRC
+
+*** Auto refresh buffers
+#+BEGIN_SRC emacs-lisp :tangle yes
+(global-auto-revert-mode 1)
+#+END_SRC
+
+*** Also auto refresh dired, but be quiet about it
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
+#+END_SRC
+
+*** Lines should be 80 characters wide, not 72
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq fill-column 80)
+(set-default 'fill-column 80)
+#+END_SRC
+
+*** Never insert tabs
+#+BEGIN_SRC emacs-lisp :tangle yes
+(set-default 'indent-tabs-mode nil)
+#+END_SRC
+
+*** Show me empty lines after buffer end
+#+BEGIN_SRC emacs-lisp :tangle yes
+(set-default 'indicate-empty-lines t)
+#+END_SRC
+
+*** Add parts of each file's directory to the buffer name if not unique
+#+BEGIN_SRC emacs-lisp :tangle yes
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+#+END_SRC
+
+* Themes
+*** setup
+#+BEGIN_SRC emacs-lisp :tangle yes
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'load-path "~/.emacs.d/themes")
+#+END_SRC
+*** solarised
+#+BEGIN_SRC emacs-lisp :tangle yes
+(load-theme 'solarized-dark t)
+#+END_SRC
+*** doom-one
+#+BEGIN_SRC emacs-lisp :tangle no
+
+;;; Settings (defaults)
+(setq doom-enable-bold t    ; if nil, bolding are universally disabled
+      doom-enable-italic t  ; if nil, italics are universally disabled
+
+      ;; doom-one specific settings
+      doom-one-brighter-modeline nil
+      doom-one-brighter-comments nil)
+
+;; Load the theme (doom-one, doom-dark, etc.)
+(load-theme 'doom-one t)
+
+;;; OPTIONAL
+;; brighter source buffers (that represent files)
+(add-hook 'find-file-hook 'doom-buffer-mode-maybe)
+;; ...if you use auto-revert-mode
+(add-hook 'after-revert-hook 'doom-buffer-mode-maybe)
+;; And you can brighten other buffers (unconditionally) with:
+(add-hook 'ediff-prepare-buffer-hook 'doom-buffer-mode)
+
+;; brighter minibuffer when active
+(add-hook 'minibuffer-setup-hook 'doom-brighten-minibuffer)
+
+;; Enable custom neotree theme
+(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+
+;; Enable nlinum line highlighting
+(doom-themes-nlinum-config)   ; requires nlinum and hl-line-mode
+
+;; Necessary for org-mode
+(setq org-fontify-whole-heading-line t
+      org-fontify-done-headline t
+      org-fontify-quote-and-verse-blocks t)
+
+#+END_SRC
+* Writing
+*** package markdown-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package markdown-mode
+    :ensure t)
+#+END_SRC
+
+*** package htmise when exporting documents to HTML documents
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package htmlize
+    :ensure t)
+#+END_SRC
+
+* Backups
+  
+The following code saves backups in =~/.emacs.d/backups=, where I can find them with =C-x C-f= (=find-file=) if I really need to.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
+(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t)))
+(setq delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
+
+;; https://www.emacswiki.org/emacs/BackupFiles
+(setq
+ backup-by-copying t     ; don't clobber symlinks
+ kept-new-versions 10    ; keep 10 latest versions
+ kept-old-versions 0     ; don't bother with old versions
+ delete-old-versions t   ; don't ask about deleting old versions
+ version-control t       ; number backups
+ vc-make-backup-files t  ; backup version controlled files
+)
+#+END_SRC
+    
+* History
+  #+BEGIN_SRC emacs-lisp :tangle yes
+(setq savehist-file "~/.emacs.d/.savehist")
+(savehist-mode 1)
+(setq history-length t)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring
+        search-ring
+        regexp-search-ring))
+  #+END_SRC
+  
+* Encoding
+#+BEGIN_SRC emacs-lisp :tangle yes
+(set-charset-priority 'unicode)
+(set-coding-system-priority 'utf-8)
+(set-language-environment "UTF-8")
+
+(setq locale-coding-system 'utf-8)
+
+(set-clipboard-coding-system 'utf-8)
+(set-file-name-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+
+(prefer-coding-system 'utf-8)
+#+END_SRC
+
+* Org Mode
+
+;; no changes for now
+
+* Cheat sheet
+
+From Pragmatic emacs...
+You can also save tables to their own files by putting the cursor in
+the table and using M-x org-table-export. You'll be asked for a
+file name and a format. For the format, type orgtbl-to and press TAB
+to see the available options (e.g. orgtbl-to-csv will convert to csv
+in the output file).
+#+BEGIN_SRC emacs-lisp :tangle yes :tangle no
+| Command            | Behaviour                             | Package        | Description                                                                              |
+|--------------------+---------------------------------------+----------------+------------------------------------------------------------------------------------------|
+| C-c s <shell key>  | create new shell or change to one     | project-shells | The default <shell key>s are “1”, “2”, “3”, “4”, “5”, “6”, “7”, “8”, “9”, “0”, “-“, “=”, |
+| M-p                | up                                    | eshell         | scroll backward previous commands                                                        |
+| M-n                | down                                  | eshell         | scroll forward previous commands                                                         |
+| C-c C-c            | re-align table                        | org            |                                                                                          |
+| C-M f or b         | move between fns                      | paredit        | Move between functions in a namespace                                                    |
+| M-x eval-last-sexp | eval emacs lisp                       | emacs lisp     | Help with debugging init.el forms                                                        |
+| C-c p f            | find file                             | projectile     | File a file in the project                                                               |
+| C-c C-z            | switch to repl or last clojure buffer | cider          |                                                                                          |
+#+END_SRC
+
+
