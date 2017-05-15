@@ -2,7 +2,7 @@
 #+OPTIONS: toc:4 h:4
 #+PROPERTY: header-args :tangle yes
 
-* About
+** About
 This is my Clojure centric configuration file for GNU Emacs, using literal programming with org-babel.
 
 It is heavely influenced by ...
@@ -22,7 +22,7 @@ To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/
   (setq user-mail-address "neil.figg@gmail.com")
 #+END_SRC
 
-* Setup Packages
+** Setup Packages
 
 The following package archives are used:
 
@@ -100,7 +100,7 @@ Initialise the archive and refresh the contents in case there is no cached archi
      (init--install-packages)))
 #+end_src
 
-* Clojure
+** Clojure
 
 The clojure ecosystem for GNU Emacs consists out of CIDER and bunch of
 supporting modules.
@@ -198,7 +198,7 @@ supporting modules.
      (add-to-list 'ac-modes 'cider-repl-mode)))
 #+end_src
 
-* Packages
+** Packages
 *** package aggerssive-indent-mode
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package aggressive-indent
@@ -489,7 +489,7 @@ supporting modules.
     :config
     (define-key global-map (kbd "C-c SPC") 'ace-jump-mode))
 #+end_src
-* Functions
+** Functions
 *** fn Ask for y/n instead of yes/no.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -656,19 +656,22 @@ supporting modules.
 (setq uniquify-buffer-name-style 'forward)
 #+END_SRC
 
-* Themes
+** Themes
 *** setup
 #+BEGIN_SRC emacs-lisp :tangle yes
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (add-to-list 'load-path "~/.emacs.d/themes")
 #+END_SRC
 *** solarised
+This is manually installed. You can find the theme [[https://github.com/bbatsov/solarized-emacs][here]]
+
 #+BEGIN_SRC emacs-lisp :tangle yes
 (load-theme 'solarized-dark t)
 #+END_SRC
 *** doom-one
-#+BEGIN_SRC emacs-lisp :tangle no
+This is manually installed. You can find the theme [[https://github.com/hlissner/emacs-doom-theme][here]]
 
+#+BEGIN_SRC emacs-lisp :tangle no
 ;;; Settings (defaults)
 (setq doom-enable-bold t    ; if nil, bolding are universally disabled
       doom-enable-italic t  ; if nil, italics are universally disabled
@@ -703,7 +706,7 @@ supporting modules.
       org-fontify-quote-and-verse-blocks t)
 
 #+END_SRC
-* Writing
+** Writing
 *** package markdown-mode
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package markdown-mode
@@ -716,7 +719,7 @@ supporting modules.
     :ensure t)
 #+END_SRC
 
-* Backups
+** Backups
   
 The following code saves backups in =~/.emacs.d/backups=, where I can find them with =C-x C-f= (=find-file=) if I really need to.
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -735,7 +738,7 @@ The following code saves backups in =~/.emacs.d/backups=, where I can find them 
 )
 #+END_SRC
     
-* History
+** History
   #+BEGIN_SRC emacs-lisp :tangle yes
 (setq savehist-file "~/.emacs.d/.savehist")
 (savehist-mode 1)
@@ -748,7 +751,7 @@ The following code saves backups in =~/.emacs.d/backups=, where I can find them 
         regexp-search-ring))
   #+END_SRC
   
-* Encoding
+** Encoding
 #+BEGIN_SRC emacs-lisp :tangle yes
 (set-charset-priority 'unicode)
 (set-coding-system-priority 'utf-8)
@@ -765,11 +768,11 @@ The following code saves backups in =~/.emacs.d/backups=, where I can find them 
 (prefer-coding-system 'utf-8)
 #+END_SRC
 
-* Org Mode
+** Org Mode
 
 ;; no changes for now
 
-* Cheat sheet
+** Cheat sheet
 
 From Pragmatic emacs...
 You can also save tables to their own files by putting the cursor in
