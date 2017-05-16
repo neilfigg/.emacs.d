@@ -12,7 +12,7 @@ It is heavely influenced by ...
 [[https://raw.githubusercontent.com/sachac/.emacs.d/gh-pages/Sacha.org][Sacha Chua]]
 [[https://github.com/credmp/emacs-config][Arjen Wiersma]]
 [[https://github.com/flyingmachine/emacs-for-clojure/][Daniel Higginbotham]]
-[[https://github.com/plexus/.emacs.d][plexuz]]
+[[https://github.com/plexus/.emacs.d][plexus]]
 
 To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/neilfigg/.emacs.d][init.org]] and run =M-x org-babel-tangle= (=C-c C-v t=)
 
@@ -41,7 +41,6 @@ The following package archives are used:
   (defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
   (defvar org-elpa '("org" . "http://orgmode.org/elpa/"))
 
-  ;; Add marmalade to package repos
   (setq package-archives nil)
   (add-to-list 'package-archives melpa-stable t)
   (add-to-list 'package-archives melpa t)
@@ -52,52 +51,19 @@ The following package archives are used:
 Initialise the archive and refresh the contents in case there is no cached archive.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  ;;(setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
-
   (package-initialize)
 
   (unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
                (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
-               (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable")))
-    (package-refresh-contents))
+               (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
 #+END_SRC
-
- At each load the package list will be evaluated and any missing
- packages will be installed. The packages-install function deals with
- this check and takes care of any loading of the packages.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defun packages-install (&rest packages)
-    (message "running packages-install")
-    (mapc (lambda (package)
-            (let ((name (car package))
-                  (repo (cdr package)))
-              (when (not (package-installed-p name))
-                (let ((package-archives (list repo)))
-                  (package-initialize)
-                  (package-install name)))))
-          packages)
-    (package-initialize)
-    (delete-other-windows))
-#+end_src
 
  Setup use-package
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  ;; Install extensions if they're missing
-  (defun init--install-packages ()
-    (message "Installing packages")
-    (packages-install
-     ;; Since use-package this is the only entry here
-     ;; ALWAYS try to use use-package!
-     (cons 'use-package melpa)
-     ))
-
-  (condition-case nil
-      (init--install-packages)
-    (error
-     (package-refresh-contents)
-     (init--install-packages)))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 #+end_src
 
 ** Clojure
@@ -134,12 +100,12 @@ supporting modules.
   ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
   (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
-  (add-hook 'cider-inspector-mode-hook 'hide-trailing-whitespace)
+  ;;(add-hook 'cider-inspector-mode-hook 'hide-trailing-whitespace)
   (add-hook 'cider-mode-hook 'enable-eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
   (add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
-  (add-hook 'cider-repl-mode-hook 'hide-trailing-whitespace)
+  ;;(add-hook 'cider-repl-mode-hook 'hide-trailing-whitespace)
 )
 
 #+end_src
@@ -734,7 +700,7 @@ The following code saves backups in =~/.emacs.d/backups=, where I can find them 
  kept-old-versions 0     ; don't bother with old versions
  delete-old-versions t   ; don't ask about deleting old versions
  version-control t       ; number backups
- vc-make-backup-files t  ; backup version controlled files
+ ;;vc-make-backup-files t  ; backup version controlled files
 )
 #+END_SRC
     

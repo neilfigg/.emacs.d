@@ -22,37 +22,12 @@
 
 (unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
              (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
-             (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable")))
-  (package-refresh-contents))
+             (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
 
-(defun packages-install (&rest packages)
-  (message "running packages-install")
-  (mapc (lambda (package)
-          (let ((name (car package))
-                (repo (cdr package)))
-            (when (not (package-installed-p name))
-              (let ((package-archives (list repo)))
-                (package-initialize)
-                (package-install name)))))
-        packages)
-  (package-initialize)
-  (delete-other-windows))
-
-;; Install extensions if they're missing
-(defun init--install-packages ()
-  (message "Installing packages")
-  (packages-install
-   ;; Since use-package this is the only entry here
-   ;; ALWAYS try to use use-package!
-   (cons 'use-package melpa)
-   ))
-
-(condition-case nil
-    (init--install-packages)
-  (error
-   (package-refresh-contents)
-   (init--install-packages)))
-
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+  
 (use-package cider
   :ensure t
   :config
@@ -80,12 +55,12 @@
   ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
   (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
-  (add-hook 'cider-inspector-mode-hook 'hide-trailing-whitespace)
+  ;;(add-hook 'cider-inspector-mode-hook 'hide-trailing-whitespace)
   (add-hook 'cider-mode-hook 'enable-eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
   (add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
-  (add-hook 'cider-repl-mode-hook 'hide-trailing-whitespace)
+  ;;(add-hook 'cider-repl-mode-hook 'hide-trailing-whitespace)
 )
 
 (use-package clojure-mode
@@ -451,7 +426,7 @@
  kept-old-versions 0     ; don't bother with old versions
  delete-old-versions t   ; don't ask about deleting old versions
  version-control t       ; number backups
- vc-make-backup-files t  ; backup version controlled files
+ ;;vc-make-backup-files t  ; backup version controlled files
 )
 
 (setq savehist-file "~/.emacs.d/.savehist")
@@ -477,3 +452,17 @@
 (set-terminal-coding-system 'utf-8)
 
 (prefer-coding-system 'utf-8)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (htmlize markdown-mode command-log-mode expand-region ace-jump-mode ace-window which-key ivy-hydra counsel-projectile counsel bm dash project-shells restclient rainbow-delimiters highlight-parentheses paredit-everywhere aggressive-indent clj-refactor cider use-package))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
