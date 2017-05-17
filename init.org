@@ -33,22 +33,15 @@ The following package archives are used:
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (require 'package)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (defvar gnu '("gnu" . "https://elpa.gnu.org/packages/"))
-  (defvar melpa '("melpa" . "https://melpa.org/packages/"))
-  (defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
-  (defvar org-elpa '("org" . "http://orgmode.org/elpa/"))
 
   (setq package-archives nil)
-  (add-to-list 'package-archives melpa-stable t)
-  (add-to-list 'package-archives melpa t)
-  (add-to-list 'package-archives gnu t)
-  (add-to-list 'package-archives org-elpa t)
+  (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 #+end_src
 
-Initialise the archive and refresh the contents in case there is no cached archive.
+Initialise the archive, refresh the contents and setup use-package.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (package-initialize)
@@ -56,29 +49,36 @@ Initialise the archive and refresh the contents in case there is no cached archi
   (unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
                (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
                (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
-#+END_SRC
 
- Setup use-package
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
 #+end_src
 
 ** Clojure
 
-The clojure ecosystem for GNU Emacs consists out of CIDER and bunch of
-supporting modules.
+Clojure and supporting modules.
+
+*** package clojure-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package clojure-mode
+  :ensure t
+  :config
+    ;;(diminish-major 'clojure-mode "clj")
+    (add-hook 'clojure-mode-hook 'enable-clj-refactor-mode)
+    (add-hook 'clojure-mode-hook 'enable-paredit-mode)
+    (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+    (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+#+end_src
 
 *** package-cider
 #+BEGIN_SRC emacs-lisp :tangle yes
  (use-package cider
   :ensure t
   :config
- ;; (diminish-major 'cider-repl-mode nil)
- ;; (diminish-major 'cider-stacktrace-mode nil)
- ;; (diminish-major 'nrepl-messages-mode nil)
+    ;; (diminish-major 'cider-repl-mode nil)
+    ;; (diminish-major 'cider-stacktrace-mode nil)
+    ;; (diminish-major 'nrepl-messages-mode nil)
 
   (setq cider-auto-select-error-buffer t
         cider-macroexpansion-print-metadata t
@@ -100,27 +100,10 @@ supporting modules.
   ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
   (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
-  ;;(add-hook 'cider-inspector-mode-hook 'hide-trailing-whitespace)
   (add-hook 'cider-mode-hook 'enable-eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
-  (add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
-  ;;(add-hook 'cider-repl-mode-hook 'hide-trailing-whitespace)
-)
-
-#+end_src
-
-*** package clojure-mode
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package clojure-mode
-  :ensure t
-  :config
-  ;;(diminish-major 'clojure-mode "clj")
-  (add-hook 'clojure-mode-hook 'enable-clj-refactor-mode)
-  (add-hook 'clojure-mode-hook 'enable-paredit-mode)
-  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
-)
+  (add-hook 'cider-repl-mode-hook 'enable-paredit-mode))
 #+end_src
 
 *** package clj-refactor
@@ -164,13 +147,31 @@ supporting modules.
      (add-to-list 'ac-modes 'cider-repl-mode)))
 #+end_src
 
+*** package clojure-snippets
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package clojure-snippets
+    :ensure t)
+#+END_SRC
+
+*** fn cider-hydra Retrieve the Cider-Hydra package from [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]].
+#+BEGIN_SRC emacs-lisp :tangle no
+  wget https://raw.githubusercontent.com/clojure-emacs/cider-hydra/master/cider-hydra.el
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (load-library (concat user-emacs-directory "cider-hydra.el"))
+  (require 'cider-hydra)
+#+END_SRC
+
 ** Packages
 *** package aggerssive-indent-mode
+TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
+
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package aggressive-indent
-    :ensure t
-    :config
-(add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+  :ensure t
+  :config
+  (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
 #+END_SRC
 
 *** package eldoc :
@@ -179,12 +180,12 @@ supporting modules.
   :commands
   enable-eldoc-mode
   :config
-  (diminish 'eldoc-mode)
-  (setq eldoc-idle-delay 0)
+    (diminish 'eldoc-mode)
+    (setq eldoc-idle-delay 0)
 
-  (defun enable-eldoc-mode ()
-    (interactive)
-    (eldoc-mode 1)))
+    (defun enable-eldoc-mode ()
+      (interactive)
+      (eldoc-mode 1)))
 #+END_SRC
 
 *** package projectile
@@ -210,51 +211,7 @@ supporting modules.
     :ensure t)
 #+END_SRC
 
-*** package hideshow : Code Folding
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package hideshow
-    :ensure t
-    :bind (("C->" . my-toggle-hideshow-all)
-           ("C-<" . hs-hide-level)
-           ("C-;" . hs-toggle-hiding))
-    :config
-    ;; Hide the comments too when you do a 'hs-hide-all'
-    (setq hs-hide-comments nil)
-    ;; Set whether isearch opens folded comments, code, or both
-    ;; where x is code, comments, t (both), or nil (neither)
-    (setq hs-isearch-open 'x)
-    ;; Add more here
-
-
-    (setq hs-set-up-overlay
-          (defun my-display-code-line-counts (ov)
-            (when (eq 'code (overlay-get ov 'hs))
-              (overlay-put ov 'display
-                           (propertize
-                            (format " ... <%d>"
-                                    (count-lines (overlay-start ov)
-                                                 (overlay-end ov)))
-                            'face 'font-lock-type-face)))))
-
-    (defvar my-hs-hide nil "Current state of hideshow for toggling all.")
-         ;;;###autoload
-    (defun my-toggle-hideshow-all () "Toggle hideshow all."
-           (interactive)
-           (setq my-hs-hide (not my-hs-hide))
-           (if my-hs-hide
-               (hs-hide-all)
-             (hs-show-all)))
-
-    (add-hook 'prog-mode-hook (lambda ()
-                                (hs-minor-mode 1)
-                                ))
-    (add-hook 'clojure-mode-hook (lambda ()
-                                (hs-minor-mode 1)
-                                ))
-    )
-#+END_SRC
-
-*** package paredit & rainbow-delimeters : LISP Editing
+*** package paredit
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package paredit
     :ensure t
@@ -266,8 +223,7 @@ supporting modules.
     (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
     (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
     (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-    :bind (("C-c d" . paredit-forward-down))
-    )
+    :bind (("C-c d" . paredit-forward-down)))
 
   ;; Ensure paredit is used EVERYWHERE!
   (use-package paredit-everywhere
@@ -275,7 +231,10 @@ supporting modules.
     :diminish paredit-everywhere-mode
     :config
     (add-hook 'prog-mode-hook #'paredit-everywhere-mode))
+#+END_SRC
 
+*** package highlight-parentheses
+#+BEGIN_SRC emacs-lisp :tangle yes
   (use-package highlight-parentheses
     :ensure t
     :diminish highlight-parentheses-mode
@@ -284,7 +243,10 @@ supporting modules.
               (lambda()
                 (highlight-parentheses-mode)
                 )))
+#+END_SRC
 
+*** package rainbow-delimeters
+#+BEGIN_SRC emacs-lisp :tangle yes
   (use-package rainbow-delimiters
     :ensure t
     :config
@@ -304,9 +266,6 @@ supporting modules.
     :config
     (yas/global-mode 1)
     (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "snippets")))
-
-  (use-package clojure-snippets
-    :ensure t)
 #+END_SRC
 
 *** package company : Auto completion
@@ -325,6 +284,7 @@ supporting modules.
   :bind
 (("C-<tab>" . company-complete)))
 #+END_SRC
+
 *** package magit
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package magit
@@ -343,12 +303,6 @@ supporting modules.
   (electric-pair-mode t)
 #+end_src
 
-*** package restclient : REST support
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package restclient
-    :ensure t)
-#+END_SRC
-
 *** project-shells : multiple shells
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package project-shells
@@ -364,6 +318,7 @@ supporting modules.
      ("8" .
       ("redplan" "~/data/projects/redplan")))))))
 #+END_SRC
+
 *** package dash
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package dash
@@ -371,7 +326,6 @@ supporting modules.
 #+END_SRC
 
 *** package bm - Bookmarks for quickly jumping around files
-
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package bm
     :ensure t
@@ -435,6 +389,7 @@ supporting modules.
 
   (use-package ivy-hydra :ensure t)
 #+END_SRC
+
 *** package which-key
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package which-key
@@ -443,18 +398,23 @@ supporting modules.
     :config
     (which-key-mode))
 #+END_SRC
-*** package ace-window ace-jump-mode
+
+*** package ace-window 
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package ace-window
     :ensure t
     :config
     (global-set-key (kbd "C-x o") 'ace-window))
+#+END_SRC
 
+*** package ace-jump-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
   (use-package ace-jump-mode
     :ensure t
     :config
     (define-key global-map (kbd "C-c SPC") 'ace-jump-mode))
-#+end_src
+#+END_SRC
+
 ** Functions
 *** fn Ask for y/n instead of yes/no.
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -464,16 +424,19 @@ supporting modules.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (global-hl-line-mode +1)
 #+END_SRC
+
 *** fn expand region
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package expand-region
   :ensure t
   :bind ("C-=" . er/expand-region))
 #+END_SRC
+
 *** fn Kill the current buffer [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs]]
 #+BEGIN_SRC emacs-lisp :tangle yes
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
+  (global-set-key (kbd "C-x k") 'kill-this-buffer)
 #+end_src
+
 *** fn Kill all the buffers (see if projectile does this)
 #+BEGIN_SRC emacs-lisp :tangle yes
   (defun nuke-all-buffers ()
@@ -481,6 +444,7 @@ supporting modules.
     (mapcar 'kill-buffer (buffer-list))
     (delete-other-windows))
 #+END_SRC
+
 *** fn show or hide menu-bar tool-bar scroll-bar blinking cursor
 #+BEGIN_SRC emacs-lisp :tangle yes
   (blink-cursor-mode -1)
@@ -488,20 +452,24 @@ supporting modules.
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
 #+end_src
+
 *** fn mouse wheel scrolling
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
-(setq mouse-wheel-progressive-speed nil)
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil))
+        mouse-wheel-progressive-speed nil)
 #+end_src
+
 *** fn deleting files
 #+BEGIN_SRC emacs-lisp :tangle yes
  (setq delete-by-moving-to-trash t
-          trash-directory "~/.Trash/emacs")
+       trash-directory "~/.Trash/emacs")
 #+end_src
+
 *** fn don't open files from the workspace in a new frame
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq ns-pop-up-frames nil)
 #+end_src
+
 *** fn inhibit-startup-message
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq inhibit-startup-message t)
@@ -511,11 +479,12 @@ supporting modules.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (global-linum-mode)
 #+end_src
+
 *** fn display line and columns numbers
 #+BEGIN_SRC emacs-lisp :tangle yes
-(line-number-mode t)
-(column-number-mode t)
-(size-indication-mode t)
+  (line-number-mode t)
+  (column-number-mode t)
+  (size-indication-mode t)
 #+end_src
 
 *** fn live coding
@@ -533,12 +502,12 @@ supporting modules.
 
 *** fn delete region with keypress
 #+BEGIN_SRC emacs-lisp :tangle yes
-(delete-selection-mode t)
+  (delete-selection-mode t)
 #+END_SRC
 
 *** fn Newline at end of file
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq require-final-newline t)
+  (setq require-final-newline t)
 #+END_SRC
 
 *** fn org indent after load
@@ -549,12 +518,11 @@ supporting modules.
 *** fn turn off the bell
 #+BEGIN_SRC emacs-lisp :tangle yes
   (defun my-bell-function ())
-
-  (setq ring-bell-function 'my-bell-function)
-  (setq visible-bell nil)
+  (setq ring-bell-function 'my-bell-function
+        visible-bell nil)
 #+END_SRC
 
-*** fn wrap text around when in text-modes. Also enable flyspell to catch nasty writing errors.
+*** fn wrap text around when in text-modes. Also enable flyspell to catch  writing errors.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (dolist (hook '(text-mode-hook))
     (add-hook hook (lambda ()
@@ -568,52 +536,41 @@ supporting modules.
   (global-prettify-symbols-mode 1)
 #+END_SRC
 
-*** fn cider-hydra Retrieve the Cider-Hydra package from [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]].
-#+BEGIN_SRC emacs-lisp :tangle no
-;; #+BEGIN_SRC shell :exports none
-  wget https://raw.githubusercontent.com/clojure-emacs/cider-hydra/master/cider-hydra.el
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (load-library (concat user-emacs-directory "cider-hydra.el"))
-  (require 'cider-hydra)
-#+END_SRC
-
 *** fn desktop-save-mode
 #+BEGIN_SRC emacs-lisp :tangle no
-(desktop-save-mode 1)
+  (desktop-save-mode 1)
 #+END_SRC
 
 *** Allow pasting selection outside of Emacs
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq x-select-enable-clipboard t)
+ (setq x-select-enable-clipboard t)
 #+END_SRC
 
 *** Auto refresh buffers
 #+BEGIN_SRC emacs-lisp :tangle yes
-(global-auto-revert-mode 1)
+ (global-auto-revert-mode 1)
 #+END_SRC
 
 *** Also auto refresh dired, but be quiet about it
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
+ (setq global-auto-revert-non-file-buffers t
+       auto-revert-verbose nil)
 #+END_SRC
 
 *** Lines should be 80 characters wide, not 72
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq fill-column 80)
-(set-default 'fill-column 80)
+  (setq fill-column 80)
+  (set-default 'fill-column 80)
 #+END_SRC
 
 *** Never insert tabs
 #+BEGIN_SRC emacs-lisp :tangle yes
-(set-default 'indent-tabs-mode nil)
+  (set-default 'indent-tabs-mode nil)
 #+END_SRC
 
 *** Show me empty lines after buffer end
 #+BEGIN_SRC emacs-lisp :tangle yes
-(set-default 'indicate-empty-lines t)
+ (set-default 'indicate-empty-lines t)
 #+END_SRC
 
 *** Add parts of each file's directory to the buffer name if not unique
@@ -625,14 +582,15 @@ supporting modules.
 ** Themes
 *** setup
 #+BEGIN_SRC emacs-lisp :tangle yes
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(add-to-list 'load-path "~/.emacs.d/themes")
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  (add-to-list 'load-path "~/.emacs.d/themes")
 #+END_SRC
+
 *** solarised
 This is manually installed. You can find the theme [[https://github.com/bbatsov/solarized-emacs][here]]
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(load-theme 'solarized-dark t)
+ (load-theme 'solarized-dark t)
 #+END_SRC
 *** doom-one
 This is manually installed. You can find the theme [[https://github.com/hlissner/emacs-doom-theme][here]]
@@ -689,33 +647,34 @@ This is manually installed. You can find the theme [[https://github.com/hlissner
   
 The following code saves backups in =~/.emacs.d/backups=, where I can find them with =C-x C-f= (=find-file=) if I really need to.
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
-(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t)))
-(setq delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
+(setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
+      auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t))
+      delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
 
 ;; https://www.emacswiki.org/emacs/BackupFiles
-(setq
- backup-by-copying t     ; don't clobber symlinks
- kept-new-versions 10    ; keep 10 latest versions
- kept-old-versions 0     ; don't bother with old versions
- delete-old-versions t   ; don't ask about deleting old versions
- version-control t       ; number backups
- ;;vc-make-backup-files t  ; backup version controlled files
+(setq  backup-by-copying t     ; don't clobber symlinks
+       kept-new-versions 10    ; keep 10 latest versions
+       kept-old-versions 0     ; don't bother with old versions
+       delete-old-versions t   ; don't ask about deleting old versions
+       version-control t       ; number backups
+       ;;vc-make-backup-files t  ; backup version controlled files
 )
 #+END_SRC
     
 ** History
   #+BEGIN_SRC emacs-lisp :tangle yes
-(setq savehist-file "~/.emacs.d/.savehist")
-(savehist-mode 1)
-(setq history-length t)
-(setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history 1)
-(setq savehist-additional-variables
+(setq savehist-file "~/.emacs.d/.savehist"
+      history-length t
+      history-delete-duplicates t
+      savehist-save-minibuffer-history 1
+      savehist-additional-variables
       '(kill-ring
         search-ring
         regexp-search-ring))
-  #+END_SRC
+
+ (savehist-mode 1)
+
+#+END_SRC
   
 ** Encoding
 #+BEGIN_SRC emacs-lisp :tangle yes

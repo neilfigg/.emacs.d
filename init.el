@@ -4,19 +4,11 @@
 
 (require 'package)
 
-(defvar gnu '("gnu" . "https://elpa.gnu.org/packages/"))
-(defvar melpa '("melpa" . "https://melpa.org/packages/"))
-(defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(defvar org-elpa '("org" . "http://orgmode.org/elpa/"))
-
-;; Add marmalade to package repos
 (setq package-archives nil)
-(add-to-list 'package-archives melpa-stable t)
-(add-to-list 'package-archives melpa t)
-(add-to-list 'package-archives gnu t)
-(add-to-list 'package-archives org-elpa t)
-
-;;(setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (package-initialize)
 
@@ -27,51 +19,47 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-  
-(use-package cider
-  :ensure t
-  :config
- ;; (diminish-major 'cider-repl-mode nil)
- ;; (diminish-major 'cider-stacktrace-mode nil)
- ;; (diminish-major 'nrepl-messages-mode nil)
-
-  (setq cider-auto-select-error-buffer t
-        cider-macroexpansion-print-metadata t
-        cider-mode-line nil
-        cider-pprint-fn 'puget
-        cider-prompt-for-symbol nil
-        cider-repl-display-help-banner nil
-        cider-repl-history-file (concat user-emacs-directory ".cider-history")
-        cider-repl-history-size 1000
-        cider-repl-pop-to-buffer-on-connect nil
-        cider-repl-use-clojure-font-lock t
-        cider-repl-use-pretty-printing t
-        cider-repl-wrap-history t
-        cider-show-error-buffer 'always
-        nrepl-buffer-name-show-port t
-        nrepl-log-messages t
-        nrepl-message-buffer-max-size 100000000)
-
-  ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
-  (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
-
-  ;;(add-hook 'cider-inspector-mode-hook 'hide-trailing-whitespace)
-  (add-hook 'cider-mode-hook 'enable-eldoc-mode)
-  (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
-  (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
-  (add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
-  ;;(add-hook 'cider-repl-mode-hook 'hide-trailing-whitespace)
-)
 
 (use-package clojure-mode
   :ensure t
   :config
-  ;;(diminish-major 'clojure-mode "clj")
-  (add-hook 'clojure-mode-hook 'enable-clj-refactor-mode)
-  (add-hook 'clojure-mode-hook 'enable-paredit-mode)
-  (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
-)
+    ;;(diminish-major 'clojure-mode "clj")
+    (add-hook 'clojure-mode-hook 'enable-clj-refactor-mode)
+    (add-hook 'clojure-mode-hook 'enable-paredit-mode)
+    (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+    (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+
+(use-package cider
+ :ensure t
+ :config
+   ;; (diminish-major 'cider-repl-mode nil)
+   ;; (diminish-major 'cider-stacktrace-mode nil)
+   ;; (diminish-major 'nrepl-messages-mode nil)
+
+ (setq cider-auto-select-error-buffer t
+       cider-macroexpansion-print-metadata t
+       cider-mode-line nil
+       cider-pprint-fn 'puget
+       cider-prompt-for-symbol nil
+       cider-repl-display-help-banner nil
+       cider-repl-history-file (concat user-emacs-directory ".cider-history")
+       cider-repl-history-size 1000
+       cider-repl-pop-to-buffer-on-connect nil
+       cider-repl-use-clojure-font-lock t
+       cider-repl-use-pretty-printing t
+       cider-repl-wrap-history t
+       cider-show-error-buffer 'always
+       nrepl-buffer-name-show-port t
+       nrepl-log-messages t
+       nrepl-message-buffer-max-size 100000000)
+
+ ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
+ (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
+
+ (add-hook 'cider-mode-hook 'enable-eldoc-mode)
+ (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
+ (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
+ (add-hook 'cider-repl-mode-hook 'enable-paredit-mode))
 
 (use-package clj-refactor
   :ensure t
@@ -88,21 +76,24 @@
     (diminish 'clj-refactor-mode)
 (cljr-add-keybindings-with-prefix "C-c r")))
 
+(use-package clojure-snippets
+    :ensure t)
+
 (use-package aggressive-indent
-    :ensure t
-    :config
-(add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+  :ensure t
+  :config
+  (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
 
 (use-package eldoc
   :commands
   enable-eldoc-mode
   :config
-  (diminish 'eldoc-mode)
-  (setq eldoc-idle-delay 0)
+    (diminish 'eldoc-mode)
+    (setq eldoc-idle-delay 0)
 
-  (defun enable-eldoc-mode ()
-    (interactive)
-    (eldoc-mode 1)))
+    (defun enable-eldoc-mode ()
+      (interactive)
+      (eldoc-mode 1)))
 
 (use-package projectile
   :config
@@ -119,47 +110,6 @@
 (use-package hydra
   :ensure t)
 
-(use-package hideshow
-  :ensure t
-  :bind (("C->" . my-toggle-hideshow-all)
-         ("C-<" . hs-hide-level)
-         ("C-;" . hs-toggle-hiding))
-  :config
-  ;; Hide the comments too when you do a 'hs-hide-all'
-  (setq hs-hide-comments nil)
-  ;; Set whether isearch opens folded comments, code, or both
-  ;; where x is code, comments, t (both), or nil (neither)
-  (setq hs-isearch-open 'x)
-  ;; Add more here
-
-
-  (setq hs-set-up-overlay
-        (defun my-display-code-line-counts (ov)
-          (when (eq 'code (overlay-get ov 'hs))
-            (overlay-put ov 'display
-                         (propertize
-                          (format " ... <%d>"
-                                  (count-lines (overlay-start ov)
-                                               (overlay-end ov)))
-                          'face 'font-lock-type-face)))))
-
-  (defvar my-hs-hide nil "Current state of hideshow for toggling all.")
-       ;;;###autoload
-  (defun my-toggle-hideshow-all () "Toggle hideshow all."
-         (interactive)
-         (setq my-hs-hide (not my-hs-hide))
-         (if my-hs-hide
-             (hs-hide-all)
-           (hs-show-all)))
-
-  (add-hook 'prog-mode-hook (lambda ()
-                              (hs-minor-mode 1)
-                              ))
-  (add-hook 'clojure-mode-hook (lambda ()
-                              (hs-minor-mode 1)
-                              ))
-  )
-
 (use-package paredit
   :ensure t
  ;; :diminish paredit-mode
@@ -170,8 +120,7 @@
   (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-  :bind (("C-c d" . paredit-forward-down))
-  )
+  :bind (("C-c d" . paredit-forward-down)))
 
 ;; Ensure paredit is used EVERYWHERE!
 (use-package paredit-everywhere
@@ -227,9 +176,6 @@
 (global-set-key (kbd "C-c n") 'iwb)
 
 (electric-pair-mode t)
-
-(use-package restclient
-  :ensure t)
 
 (use-package project-shells
    :ensure t
@@ -342,11 +288,11 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
-(setq mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil))
+      mouse-wheel-progressive-speed nil)
 
 (setq delete-by-moving-to-trash t
-         trash-directory "~/.Trash/emacs")
+      trash-directory "~/.Trash/emacs")
 
 (setq ns-pop-up-frames nil)
 
@@ -375,9 +321,8 @@
 (eval-after-load "org-indent" '(diminish 'org-indent-mode))
 
 (defun my-bell-function ())
-
-(setq ring-bell-function 'my-bell-function)
-(setq visible-bell nil)
+(setq ring-bell-function 'my-bell-function
+      visible-bell nil)
 
 (dolist (hook '(text-mode-hook))
   (add-hook hook (lambda ()
@@ -391,8 +336,8 @@
 
 (global-auto-revert-mode 1)
 
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
+(setq global-auto-revert-non-file-buffers t
+      auto-revert-verbose nil)
 
 (setq fill-column 80)
 (set-default 'fill-column 80)
@@ -415,29 +360,29 @@
 (use-package htmlize
   :ensure t)
 
-(setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
-(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t)))
-(setq delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
+(setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
+      auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t))
+      delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
 
 ;; https://www.emacswiki.org/emacs/BackupFiles
-(setq
- backup-by-copying t     ; don't clobber symlinks
- kept-new-versions 10    ; keep 10 latest versions
- kept-old-versions 0     ; don't bother with old versions
- delete-old-versions t   ; don't ask about deleting old versions
- version-control t       ; number backups
- ;;vc-make-backup-files t  ; backup version controlled files
+(setq  backup-by-copying t     ; don't clobber symlinks
+       kept-new-versions 10    ; keep 10 latest versions
+       kept-old-versions 0     ; don't bother with old versions
+       delete-old-versions t   ; don't ask about deleting old versions
+       version-control t       ; number backups
+       ;;vc-make-backup-files t  ; backup version controlled files
 )
 
-(setq savehist-file "~/.emacs.d/.savehist")
-(savehist-mode 1)
-(setq history-length t)
-(setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history 1)
-(setq savehist-additional-variables
+(setq savehist-file "~/.emacs.d/.savehist"
+      history-length t
+      history-delete-duplicates t
+      savehist-save-minibuffer-history 1
+      savehist-additional-variables
       '(kill-ring
         search-ring
         regexp-search-ring))
+
+ (savehist-mode 1)
 
 (set-charset-priority 'unicode)
 (set-coding-system-priority 'utf-8)
@@ -459,7 +404,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (htmlize markdown-mode command-log-mode expand-region ace-jump-mode ace-window which-key ivy-hydra counsel-projectile counsel bm dash project-shells restclient rainbow-delimiters highlight-parentheses paredit-everywhere aggressive-indent clj-refactor cider use-package))))
+    (clojure-snippets which-key use-package restclient rainbow-delimiters project-shells paredit-everywhere markdown-mode ivy-hydra htmlize highlight-parentheses expand-region dash counsel-projectile command-log-mode clj-refactor bm aggressive-indent ace-window ace-jump-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
