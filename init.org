@@ -18,8 +18,8 @@ To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/
 
 ** Personal
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (setq user-full-name "Neil Figg")
-  (setq user-mail-address "neil.figg@gmail.com")
+(setq user-full-name "Neil Figg")
+(setq user-mail-address "neil.figg@gmail.com")
 #+END_SRC
 
 ** Setup Packages
@@ -32,7 +32,7 @@ The following package archives are used:
  - org-elpa
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (require 'package)
+(require 'package)
 
   (setq package-archives nil)
   (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
@@ -95,7 +95,8 @@ Clojure and supporting modules.
         cider-show-error-buffer 'always
         nrepl-buffer-name-show-port t
         nrepl-log-messages t
-        nrepl-message-buffer-max-size 100000000)
+        nrepl-message-buffer-max-size 100000000
+        cider-test-show-report-on-success t)
 
   ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
   (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
@@ -642,13 +643,14 @@ This is manually installed. You can find the theme [[https://github.com/hlissner
   (use-package htmlize
     :ensure t)
 #+END_SRC
-
+    
 ** Backups
   
 The following code saves backups in =~/.emacs.d/backups=, where I can find them with =C-x C-f= (=find-file=) if I really need to.
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
-      auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t))
+(setq backup-directory-alist `(("." . ,"~/.emacs.d/backups"))
+      auto-save-file-name-transforms '((".*" ,"~/.emacs.d/auto-save" t))
+      auto-save-list-file-prefix "~/.emacs.d/auto-save"
       delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
 
 ;; https://www.emacswiki.org/emacs/BackupFiles
@@ -675,7 +677,7 @@ The following code saves backups in =~/.emacs.d/backups=, where I can find them 
  (savehist-mode 1)
 
 #+END_SRC
-  
+
 ** Encoding
 #+BEGIN_SRC emacs-lisp :tangle yes
 (set-charset-priority 'unicode)
@@ -706,16 +708,17 @@ file name and a format. For the format, type orgtbl-to and press TAB
 to see the available options (e.g. orgtbl-to-csv will convert to csv
 in the output file).
 #+BEGIN_SRC emacs-lisp :tangle yes :tangle no
-| Command            | Behaviour                             | Package        | Description                                                                              |
-|--------------------+---------------------------------------+----------------+------------------------------------------------------------------------------------------|
-| C-c s <shell key>  | create new shell or change to one     | project-shells | The default <shell key>s are “1”, “2”, “3”, “4”, “5”, “6”, “7”, “8”, “9”, “0”, “-“, “=”, |
-| M-p                | up                                    | eshell         | scroll backward previous commands                                                        |
-| M-n                | down                                  | eshell         | scroll forward previous commands                                                         |
-| C-c C-c            | re-align table                        | org            |                                                                                          |
-| C-M f or b         | move between fns                      | paredit        | Move between functions in a namespace                                                    |
-| M-x eval-last-sexp | eval emacs lisp                       | emacs lisp     | Help with debugging init.el forms                                                        |
-| C-c p f            | find file                             | projectile     | File a file in the project                                                               |
-| C-c C-z            | switch to repl or last clojure buffer | cider          |                                                                                          |
+| Command            | Behaviour                               | Package        | Description                                                                              |
+|--------------------+-----------------------------------------+----------------+------------------------------------------------------------------------------------------|
+| C-c s <shell key>  | create new shell or change to one       | project-shells | The default <shell key>s are “1”, “2”, “3”, “4”, “5”, “6”, “7”, “8”, “9”, “0”, “-“, “=”, |
+| M-p                | up                                      | eshell         | scroll backward previous commands                                                        |
+| M-n                | down                                    | eshell         | scroll forward previous commands                                                         |
+| C-c C-c            | re-align table                          | org            |                                                                                          |
+| C-M f or b         | move between fns                        | paredit        | Move between functions in a namespace                                                    |
+| C-u {              | wrap all symbols till end of expression | paredit        | (merge my-map :a "a" :b "b") becomes (merge my-ma {:a "a" :b "b"})                              |
+| M-x eval-last-sexp | eval emacs lisp                         | emacs lisp     | Help with debugging init.el forms                                                        |
+| C-c p f            | find file                               | projectile     | File a file in the project                                                               |
+| C-c C-z            | switch to repl or last clojure buffer   | cider          |                                                                                          |
 #+END_SRC
 
 

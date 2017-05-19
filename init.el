@@ -4,11 +4,11 @@
 
 (require 'package)
 
-(setq package-archives nil)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+  (setq package-archives nil)
+  (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (package-initialize)
 
@@ -51,7 +51,8 @@
        cider-show-error-buffer 'always
        nrepl-buffer-name-show-port t
        nrepl-log-messages t
-       nrepl-message-buffer-max-size 100000000)
+       nrepl-message-buffer-max-size 100000000
+       cider-test-show-report-on-success t)
 
  ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
  (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
@@ -360,8 +361,9 @@
 (use-package htmlize
   :ensure t)
 
-(setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
-      auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t))
+(setq backup-directory-alist `(("." . ,"~/.emacs.d/backups"))
+      auto-save-file-name-transforms '((".*" ,"~/.emacs.d/auto-save" t))
+      auto-save-list-file-prefix "~/.emacs.d/auto-save"
       delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
 
 ;; https://www.emacswiki.org/emacs/BackupFiles
@@ -397,17 +399,3 @@
 (set-terminal-coding-system 'utf-8)
 
 (prefer-coding-system 'utf-8)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (clojure-snippets which-key use-package restclient rainbow-delimiters project-shells paredit-everywhere markdown-mode ivy-hydra htmlize highlight-parentheses expand-region dash counsel-projectile command-log-mode clj-refactor bm aggressive-indent ace-window ace-jump-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
