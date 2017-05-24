@@ -24,10 +24,10 @@
   :ensure t
   :config
     ;;(diminish-major 'clojure-mode "clj")
-    (add-hook 'clojure-mode-hook 'enable-clj-refactor-mode)
-    (add-hook 'clojure-mode-hook 'enable-paredit-mode)
-    (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+    (add-hook 'clojure-mode-hook #'enable-clj-refactor-mode)
+    (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
 
 (use-package cider
  :ensure t
@@ -74,8 +74,9 @@
   (defun enable-clj-refactor-mode ()
     (interactive)
     (clj-refactor-mode 1)
-    (diminish 'clj-refactor-mode)
-(cljr-add-keybindings-with-prefix "C-c r")))
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;;(diminish 'clj-refactor-mode)
+    (cljr-add-keybindings-with-prefix "C-c r")))
 
 (use-package clojure-snippets
     :ensure t)
@@ -105,8 +106,8 @@
         projectile-use-git-grep t
         projectile-switch-project-action 'projectile-dired))
 
-(use-package s
-  :ensure t)
+;;  (use-package s
+;;    :ensure t)
 
 (use-package hydra
   :ensure t)
@@ -361,9 +362,9 @@
 (use-package htmlize
   :ensure t)
 
-(setq backup-directory-alist `(("." . ,"~/.emacs.d/backups"))
-      auto-save-file-name-transforms '((".*" ,"~/.emacs.d/auto-save" t))
-      auto-save-list-file-prefix "~/.emacs.d/auto-save"
+(setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
+      auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t))
+      auto-save-list-file-prefix "~/.emacs.d/tauto-save"
       delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
 
 ;; https://www.emacswiki.org/emacs/BackupFiles

@@ -65,11 +65,11 @@ Clojure and supporting modules.
   :ensure t
   :config
     ;;(diminish-major 'clojure-mode "clj")
-    (add-hook 'clojure-mode-hook 'enable-clj-refactor-mode)
-    (add-hook 'clojure-mode-hook 'enable-paredit-mode)
-    (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
-#+end_src
+    (add-hook 'clojure-mode-hook #'enable-clj-refactor-mode)
+    (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
+#+END_SRC
 
 *** package-cider
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -105,7 +105,7 @@ Clojure and supporting modules.
   (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
   (add-hook 'cider-repl-mode-hook 'enable-paredit-mode))
-#+end_src
+#+END_SRC
 
 *** package clj-refactor
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -121,9 +121,10 @@ Clojure and supporting modules.
   (defun enable-clj-refactor-mode ()
     (interactive)
     (clj-refactor-mode 1)
-    (diminish 'clj-refactor-mode)
-(cljr-add-keybindings-with-prefix "C-c r")))
-#+end_src
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;;(diminish 'clj-refactor-mode)
+    (cljr-add-keybindings-with-prefix "C-c r")))
+#+END_SRC
 
 *** package cider-interaction
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -134,19 +135,35 @@ Clojure and supporting modules.
             (lambda ()
               (unbind-key "C-j" cider-clojure-interaction-mode-map)
               (unbind-key "<remap> <paredit-newline>" cider-clojure-interaction-mode-map))))
-#+end_src
+#+END_SRC
 
-*** package ac-cider : auto-complete
+*** auto-complete - https://github.com/auto-complete/auto-complete
 #+BEGIN_SRC emacs-lisp :tangle no
-(require 'ac-cider)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
-     (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode)))
-#+end_src
+(use-package auto-complete
+  :ensure t
+  :init
+  (require 'auto-complete-config)
+  :config
+  (ac-config-default)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
+#+END_SRC
+    
+*** package ac-cider : https://github.com/clojure-emacs/ac-cider
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package ac-cider
+  :ensure t
+  :config
+  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+  (add-hook 'cider-mode-hook 'ac-cider-setup)
+  (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+  (eval-after-load "auto-complete"
+    '(progn
+       (add-to-list 'ac-modes 'cider-mode)
+(add-to-list 'ac-modes 'cider-repl-mode))))
+#+END_SRC
+
+
+
 
 *** package clojure-snippets
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -202,8 +219,8 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
 #+END_SRC
 *** package s : String manipulation routines for emacs lisp
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package s
-    :ensure t)
+;;  (use-package s
+;;    :ensure t)
 #+END_SRC
 
 *** package Hydras : Check out [[https://github.com/abo-abo/hydra][the project page]] for some great examples.
@@ -302,7 +319,7 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
   (global-set-key (kbd "C-c n") 'iwb)
 
   (electric-pair-mode t)
-#+end_src
+#+END_SRC
 
 *** project-shells : multiple shells
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -436,7 +453,7 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
 *** fn Kill the current buffer [[http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/][Pragmatic Emacs]]
 #+BEGIN_SRC emacs-lisp :tangle yes
   (global-set-key (kbd "C-x k") 'kill-this-buffer)
-#+end_src
+#+END_SRC
 
 *** fn Kill all the buffers (see if projectile does this)
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -452,41 +469,41 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
   (menu-bar-mode 1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-#+end_src
+#+END_SRC
 
 *** fn mouse wheel scrolling
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil))
         mouse-wheel-progressive-speed nil)
-#+end_src
+#+END_SRC
 
 *** fn deleting files
 #+BEGIN_SRC emacs-lisp :tangle yes
  (setq delete-by-moving-to-trash t
        trash-directory "~/.Trash/emacs")
-#+end_src
+#+END_SRC
 
 *** fn don't open files from the workspace in a new frame
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq ns-pop-up-frames nil)
-#+end_src
+#+END_SRC
 
 *** fn inhibit-startup-message
 #+BEGIN_SRC emacs-lisp :tangle yes
   (setq inhibit-startup-message t)
-#+end_src
+#+END_SRC
 
 *** fn show line numbers
 #+BEGIN_SRC emacs-lisp :tangle yes
   (global-linum-mode)
-#+end_src
+#+END_SRC
 
 *** fn display line and columns numbers
 #+BEGIN_SRC emacs-lisp :tangle yes
   (line-number-mode t)
   (column-number-mode t)
   (size-indication-mode t)
-#+end_src
+#+END_SRC
 
 *** fn live coding
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -648,9 +665,9 @@ This is manually installed. You can find the theme [[https://github.com/hlissner
   
 The following code saves backups in =~/.emacs.d/backups=, where I can find them with =C-x C-f= (=find-file=) if I really need to.
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq backup-directory-alist `(("." . ,"~/.emacs.d/backups"))
-      auto-save-file-name-transforms '((".*" ,"~/.emacs.d/auto-save" t))
-      auto-save-list-file-prefix "~/.emacs.d/auto-save"
+(setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
+      auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t))
+      auto-save-list-file-prefix "~/.emacs.d/tauto-save"
       delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
 
 ;; https://www.emacswiki.org/emacs/BackupFiles
@@ -715,10 +732,12 @@ in the output file).
 | M-n                | down                                    | eshell         | scroll forward previous commands                                                         |
 | C-c C-c            | re-align table                          | org            |                                                                                          |
 | C-M f or b         | move between fns                        | paredit        | Move between functions in a namespace                                                    |
-| C-u {              | wrap all symbols till end of expression | paredit        | (merge my-map :a "a" :b "b") becomes (merge my-ma {:a "a" :b "b"})                              |
+| C-u {              | wrap all symbols till end of expression | paredit        | (merge my-map :a "a" :b "b") becomes (merge my-ma {:a "a" :b "b"})                       |
 | M-x eval-last-sexp | eval emacs lisp                         | emacs lisp     | Help with debugging init.el forms                                                        |
 | C-c p f            | find file                               | projectile     | File a file in the project                                                               |
 | C-c C-z            | switch to repl or last clojure buffer   | cider          |                                                                                          |
+| C-M-i              | auto-complete code                      | ac-cider       |                                                                                          |
+|                    |                                         |                |                                                                                          |
 #+END_SRC
 
 
