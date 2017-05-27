@@ -60,7 +60,7 @@
        cider-test-show-report-on-success t)
 
  ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
- (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
+ ;;(set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
  (add-hook 'cider-mode-hook #'enable-eldoc-mode)
  (add-hook 'cider-mode-hook #'ac-flyspell-workaround)
@@ -342,9 +342,12 @@
          ("C-c v l" . magit-log-buffer-file)
          ("C-c v p" . magit-pull))
    :config (setq magit-save-repository-buffers 'dontask))
-
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(add-to-list 'load-path "~/.emacs.d/themes")
+#+END_SR
+** Themes
+*** setup
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  (add-to-list 'load-path "~/.emacs.d/themes")
 
 (load-theme 'solarized-dark t)
 

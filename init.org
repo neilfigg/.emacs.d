@@ -64,7 +64,7 @@ Initialise the archive, refresh the contents and setup use-package.
 
 Clojure and supporting modules.
 
-*** package clojure-mode [[https://github.com/clojure-emacs/clojure-mode][GitHub page]]
+*** package clojure-mode -  [[https://github.com/clojure-emacs/clojure-mode][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-mode
   :ensure t
@@ -76,7 +76,7 @@ Clojure and supporting modules.
     (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
 #+END_SRC
 
-*** package-cider - [[https://github.com/clojure-emacs/cider][GitHub page]]
+*** package-cider - [[https://github.com/clojure-emacs/cider][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
  (use-package cider
   :ensure t
@@ -105,7 +105,7 @@ Clojure and supporting modules.
         cider-test-show-report-on-success t)
 
   ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
-  (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
+  ;;(set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
   (add-hook 'cider-mode-hook #'enable-eldoc-mode)
   (add-hook 'cider-mode-hook #'ac-flyspell-workaround)
@@ -116,7 +116,7 @@ Clojure and supporting modules.
   (add-hook 'cider-repl-mode-hook #'ac-cider-setup))
 #+END_SRC
 
-*** package clj-refactor - [[https://github.com/clojure-emacs/clj-refactor.el][GitHub page]]
+*** package clj-refactor - [[https://github.com/clojure-emacs/clj-refactor.el][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clj-refactor
   :ensure t
@@ -134,8 +134,7 @@ Clojure and supporting modules.
     ;;(diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c r")))
 #+END_SRC
-
-*** package cider-interaction - [[https://github.com/clojure-emacs/cider/blob/master/cider-interaction.el][GitHub page]]
+*** package cider-interaction - [[https://github.com/clojure-emacs/cider/blob/master/cider-interaction.el][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package cider-interaction
   :ensure t
@@ -146,7 +145,7 @@ Clojure and supporting modules.
               (unbind-key "<remap> <paredit-newline>" cider-clojure-interaction-mode-map))))
 #+END_SRC
 
-*** package auto-complete -  [[https://github.com/auto-complete/auto-complete][GitHub page]]
+*** package auto-complete -  [[https://github.com/auto-complete/auto-complete][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package auto-complete
   :ensure t
@@ -157,7 +156,7 @@ Clojure and supporting modules.
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
 #+END_SRC
     
-*** package ac-cider -  [[https://github.com/clojure-emacs/ac-cider][GitHub page]]
+*** package ac-cider -  [[https://github.com/clojure-emacs/ac-cider][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ac-cider
   :ensure t
@@ -168,13 +167,13 @@ Clojure and supporting modules.
     (add-to-list 'ac-modes 'cider-repl-mode))))
 #+END_SRC
 
-*** package clojure-snippets - [[https://github.com/mpenet/clojure-snippets][GitHub page]]
+*** package clojure-snippets - [[https://github.com/mpenet/clojure-snippets][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-snippets
     :ensure t)
 #+END_SRC
 
-*** package cider-hydra  [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]]
+*** package cider-hydra -  [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle no
  (use-package cider-hydra
   :ensure t
@@ -184,8 +183,6 @@ Clojure and supporting modules.
 
 ** Packages
 *** package aggerssive-indent-mode
-TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
-
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package aggressive-indent
   :ensure t)
@@ -217,13 +214,13 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
         projectile-switch-project-action 'projectile-dired))
 #+END_SRC
 
-*** package s - [[ https://github.com/magnars/s.el][GitHub page]]
+*** package s - [[ https://github.com/magnars/s.el][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package s
    :ensure t)
 #+END_SRC
 
-*** package Hydras  [[https://github.com/abo-abo/hydra][GitHub page]] .
+*** package Hydras - [[https://github.com/abo-abo/hydra][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package hydra
     :ensure t)
@@ -569,7 +566,7 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
 #+END_SRC
 
 ** Git
-*** package magit [[https://github.com/magit/magit/wiki][project page]]
+*** package magit [[https://github.com/magit/magit/wiki][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package magit                    
   :ensure t
@@ -579,7 +576,7 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
          ("C-c v l" . magit-log-buffer-file)
          ("C-c v p" . magit-pull))
    :config (setq magit-save-repository-buffers 'dontask))
-#+END_SRC
+#+END_SR
 ** Themes
 *** setup
 #+BEGIN_SRC emacs-lisp :tangle yes
