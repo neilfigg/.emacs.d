@@ -3,12 +3,13 @@
 (setq user-mail-address "neil.figg@gmail.com")
 
 (require 'package)
+(setq package-enable-at-startup nil)   ; To prevent initialising twice
+(setq package-archives nil)
 
-  (setq package-archives nil)
-  (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (package-initialize)
 
@@ -17,8 +18,11 @@
              (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
 
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
 
 (use-package clojure-mode
   :ensure t
@@ -39,6 +43,7 @@
  (setq cider-auto-select-error-buffer t
        cider-macroexpansion-print-metadata t
        cider-mode-line nil
+       cider-overlays-use-font-lock t
        cider-pprint-fn 'puget
        cider-prompt-for-symbol nil
        cider-repl-display-help-banner nil
@@ -57,10 +62,13 @@
  ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
  (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
- (add-hook 'cider-mode-hook 'enable-eldoc-mode)
- (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
- (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
- (add-hook 'cider-repl-mode-hook 'enable-paredit-mode))
+ (add-hook 'cider-mode-hook #'enable-eldoc-mode)
+ (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+ (add-hook 'cider-mode-hook 'ac-cider-setup)
+ (add-hook 'cider-repl-mode-hook #'enable-eldoc-mode)
+ (add-hook 'cider-repl-mode-hook #'enable-clj-refactor-mode)
+ (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
+ (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
 
 (use-package clj-refactor
   :ensure t
@@ -78,13 +86,27 @@
     ;;(diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c r")))
 
+(use-package auto-complete
+  :ensure t
+  :init
+  (require 'auto-complete-config)
+  :config
+  (ac-config-default)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
+
+(use-package ac-cider
+  :ensure t
+  :config
+  (eval-after-load "auto-complete"
+    '(progn
+       (add-to-list 'ac-modes 'cider-mode)
+    (add-to-list 'ac-modes 'cider-repl-mode))))
+
 (use-package clojure-snippets
     :ensure t)
 
 (use-package aggressive-indent
-  :ensure t
-  :config
-  (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+  :ensure t)
 
 (use-package eldoc
   :commands
@@ -106,8 +128,8 @@
         projectile-use-git-grep t
         projectile-switch-project-action 'projectile-dired))
 
-;;  (use-package s
-;;    :ensure t)
+(use-package s
+ :ensure t)
 
 (use-package hydra
   :ensure t)
@@ -149,35 +171,6 @@
               )))
 
 (global-highlight-parentheses-mode)
-
-(use-package company
-  :config
-  (global-company-mode 1)
-  (diminish 'company-mode)
-  (setq company-idle-delay nil
-        company-minimum-prefix-length 0
-        company-selection-wrap-around t
-        company-tooltip-align-annotations t
-        company-tooltip-limit 16
-        company-require-match nil)
-  (bind-key "C-q" #'company-show-doc-buffer company-active-map)
-  :bind
-(("C-<tab>" . company-complete)))
-
-(use-package magit
-  :config
-  (global-set-key (kbd "C-c m") 'magit-status))
-
-(defun iwb ()
-  "indent whole buffer"
-  (interactive)
-  (delete-trailing-whitespace)
-  (indent-region (point-min) (point-max) nil)
-  (untabify (point-min) (point-max)))
-
-(global-set-key (kbd "C-c n") 'iwb)
-
-(electric-pair-mode t)
 
 (use-package project-shells
    :ensure t
@@ -306,16 +299,6 @@
 (column-number-mode t)
 (size-indication-mode t)
 
-(use-package command-log-mode
-  :ensure t)
-
-(defun live-coding ()
-  (interactive)
-  (set-face-attribute 'default nil :font "Hack-20")
-  (add-hook 'prog-mode-hook 'command-log-mode)
-  ;;(add-hook 'prog-mode-hook (lambda () (focus-mode 1)))
-  )
-
 (delete-selection-mode t)
 
 (setq require-final-newline t)
@@ -350,6 +333,15 @@
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
+
+(use-package magit                    
+  :ensure t
+  :bind (("C-c v c" . magit-clone)
+         ("C-c v v" . magit-status)
+         ("C-c v g" . magit-blame)
+         ("C-c v l" . magit-log-buffer-file)
+         ("C-c v p" . magit-pull))
+   :config (setq magit-save-repository-buffers 'dontask))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (add-to-list 'load-path "~/.emacs.d/themes")

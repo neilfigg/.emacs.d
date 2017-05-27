@@ -1,6 +1,5 @@
-#+TITLE: Neil Figg's Emacs configuration
+#+TITLE: GNU Emacs configuration
 #+OPTIONS: toc:4 h:4
-#+PROPERTY: header-args :tangle yes
 
 ** About
 This is my Clojure centric configuration file for GNU Emacs, using literal programming with org-babel.
@@ -15,6 +14,8 @@ It is heavely influenced by ...
 [[https://github.com/plexus/.emacs.d][plexus]]
 
 To produce the corresponding =~/.emacs.d/init.el= open the [[https://github.com/neilfigg/.emacs.d][init.org]] and run =M-x org-babel-tangle= (=C-c C-v t=)
+
+Some packages are not being tangled =tangle no=
 
 ** Personal
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -33,33 +34,37 @@ The following package archives are used:
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (require 'package)
+(setq package-enable-at-startup nil)   ; To prevent initialising twice
+(setq package-archives nil)
 
-  (setq package-archives nil)
-  (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-#+end_src
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+#+END_SRC
 
 Initialise the archive, refresh the contents and setup use-package.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (package-initialize)
+(package-initialize)
 
-  (unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
-               (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
-               (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
+(unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
+             (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
+             (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
 
-  (unless (package-installed-p 'use-package)
+(unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
-#+end_src
+
+(eval-when-compile
+  (require 'use-package))
+#+END_SRC
 
 ** Clojure
 
 Clojure and supporting modules.
 
-*** package clojure-mode
+*** package clojure-mode [[https://github.com/clojure-emacs/clojure-mode][GitHub page]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-mode
   :ensure t
@@ -71,7 +76,7 @@ Clojure and supporting modules.
     (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
 #+END_SRC
 
-*** package-cider
+*** package-cider - [[https://github.com/clojure-emacs/cider][GitHub page]]
 #+BEGIN_SRC emacs-lisp :tangle yes
  (use-package cider
   :ensure t
@@ -83,6 +88,7 @@ Clojure and supporting modules.
   (setq cider-auto-select-error-buffer t
         cider-macroexpansion-print-metadata t
         cider-mode-line nil
+        cider-overlays-use-font-lock t
         cider-pprint-fn 'puget
         cider-prompt-for-symbol nil
         cider-repl-display-help-banner nil
@@ -101,13 +107,16 @@ Clojure and supporting modules.
   ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
   (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
-  (add-hook 'cider-mode-hook 'enable-eldoc-mode)
-  (add-hook 'cider-repl-mode-hook 'enable-eldoc-mode)
-  (add-hook 'cider-repl-mode-hook 'enable-clj-refactor-mode)
-  (add-hook 'cider-repl-mode-hook 'enable-paredit-mode))
+  (add-hook 'cider-mode-hook #'enable-eldoc-mode)
+  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+  (add-hook 'cider-mode-hook 'ac-cider-setup)
+  (add-hook 'cider-repl-mode-hook #'enable-eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'enable-clj-refactor-mode)
+  (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
+  (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
 #+END_SRC
 
-*** package clj-refactor
+*** package clj-refactor - [[https://github.com/clojure-emacs/clj-refactor.el][GitHub page]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clj-refactor
   :ensure t
@@ -126,7 +135,7 @@ Clojure and supporting modules.
     (cljr-add-keybindings-with-prefix "C-c r")))
 #+END_SRC
 
-*** package cider-interaction
+*** package cider-interaction - [[https://github.com/clojure-emacs/cider/blob/master/cider-interaction.el][GitHub page]]
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package cider-interaction
   :ensure t
@@ -137,8 +146,8 @@ Clojure and supporting modules.
               (unbind-key "<remap> <paredit-newline>" cider-clojure-interaction-mode-map))))
 #+END_SRC
 
-*** auto-complete - https://github.com/auto-complete/auto-complete
-#+BEGIN_SRC emacs-lisp :tangle no
+*** package auto-complete -  [[https://github.com/auto-complete/auto-complete][GitHub page]]
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package auto-complete
   :ensure t
   :init
@@ -148,37 +157,29 @@ Clojure and supporting modules.
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
 #+END_SRC
     
-*** package ac-cider : https://github.com/clojure-emacs/ac-cider
-#+BEGIN_SRC emacs-lisp :tangle no
+*** package ac-cider -  [[https://github.com/clojure-emacs/ac-cider][GitHub page]]
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ac-cider
   :ensure t
   :config
-  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-  (add-hook 'cider-mode-hook 'ac-cider-setup)
-  (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
   (eval-after-load "auto-complete"
     '(progn
        (add-to-list 'ac-modes 'cider-mode)
-(add-to-list 'ac-modes 'cider-repl-mode))))
+    (add-to-list 'ac-modes 'cider-repl-mode))))
 #+END_SRC
 
-
-
-
-*** package clojure-snippets
+*** package clojure-snippets - [[https://github.com/mpenet/clojure-snippets][GitHub page]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-snippets
     :ensure t)
 #+END_SRC
 
-*** fn cider-hydra Retrieve the Cider-Hydra package from [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]].
+*** package cider-hydra  [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle no
-  wget https://raw.githubusercontent.com/clojure-emacs/cider-hydra/master/cider-hydra.el
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (load-library (concat user-emacs-directory "cider-hydra.el"))
-  (require 'cider-hydra)
+ (use-package cider-hydra
+  :ensure t
+  :config
+  (cider-hydra-on))
 #+END_SRC
 
 ** Packages
@@ -187,9 +188,7 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package aggressive-indent
-  :ensure t
-  :config
-  (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+  :ensure t)
 #+END_SRC
 
 *** package eldoc :
@@ -217,13 +216,14 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
         projectile-use-git-grep t
         projectile-switch-project-action 'projectile-dired))
 #+END_SRC
-*** package s : String manipulation routines for emacs lisp
+
+*** package s - [[ https://github.com/magnars/s.el][GitHub page]]
 #+BEGIN_SRC emacs-lisp :tangle yes
-;;  (use-package s
-;;    :ensure t)
+  (use-package s
+   :ensure t)
 #+END_SRC
 
-*** package Hydras : Check out [[https://github.com/abo-abo/hydra][the project page]] for some great examples.
+*** package Hydras  [[https://github.com/abo-abo/hydra][GitHub page]] .
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package hydra
     :ensure t)
@@ -287,8 +287,9 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
 #+END_SRC
 
 *** package company : Auto completion
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package company
+  :ensure t
   :config
   (global-company-mode 1)
   (diminish 'company-mode)
@@ -301,24 +302,6 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
   (bind-key "C-q" #'company-show-doc-buffer company-active-map)
   :bind
 (("C-<tab>" . company-complete)))
-#+END_SRC
-
-*** package magit
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package magit
-    :config
-    (global-set-key (kbd "C-c m") 'magit-status))
-
-  (defun iwb ()
-    "indent whole buffer"
-    (interactive)
-    (delete-trailing-whitespace)
-    (indent-region (point-min) (point-max) nil)
-    (untabify (point-min) (point-max)))
-
-  (global-set-key (kbd "C-c n") 'iwb)
-
-  (electric-pair-mode t)
 #+END_SRC
 
 *** project-shells : multiple shells
@@ -438,6 +421,7 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
 #+BEGIN_SRC emacs-lisp :tangle yes
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+
 *** fn highlight the current line
 #+BEGIN_SRC emacs-lisp :tangle yes
 (global-hl-line-mode +1)
@@ -503,19 +487,6 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
   (line-number-mode t)
   (column-number-mode t)
   (size-indication-mode t)
-#+END_SRC
-
-*** fn live coding
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package command-log-mode
-    :ensure t)
-
-  (defun live-coding ()
-    (interactive)
-    (set-face-attribute 'default nil :font "Hack-20")
-    (add-hook 'prog-mode-hook 'command-log-mode)
-    ;;(add-hook 'prog-mode-hook (lambda () (focus-mode 1)))
-    )
 #+END_SRC
 
 *** fn delete region with keypress
@@ -597,6 +568,18 @@ TODO Add clojure-mode-hook here, or in the (use-package clojure-mode) defn
 (setq uniquify-buffer-name-style 'forward)
 #+END_SRC
 
+** Git
+*** package magit [[https://github.com/magit/magit/wiki][project page]]
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package magit                    
+  :ensure t
+  :bind (("C-c v c" . magit-clone)
+         ("C-c v v" . magit-status)
+         ("C-c v g" . magit-blame)
+         ("C-c v l" . magit-log-buffer-file)
+         ("C-c v p" . magit-pull))
+   :config (setq magit-save-repository-buffers 'dontask))
+#+END_SRC
 ** Themes
 *** setup
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -681,7 +664,7 @@ The following code saves backups in =~/.emacs.d/backups=, where I can find them 
 #+END_SRC
     
 ** History
-  #+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq savehist-file "~/.emacs.d/.savehist"
       history-length t
       history-delete-duplicates t
