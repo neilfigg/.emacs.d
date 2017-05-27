@@ -63,12 +63,12 @@
  (set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
 
  (add-hook 'cider-mode-hook #'enable-eldoc-mode)
- (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
- (add-hook 'cider-mode-hook 'ac-cider-setup)
+ (add-hook 'cider-mode-hook #'ac-flyspell-workaround)
+ (add-hook 'cider-mode-hook #'ac-cider-setup)
  (add-hook 'cider-repl-mode-hook #'enable-eldoc-mode)
  (add-hook 'cider-repl-mode-hook #'enable-clj-refactor-mode)
  (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
- (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
+ (add-hook 'cider-repl-mode-hook #'ac-cider-setup))
 
 (use-package clj-refactor
   :ensure t
