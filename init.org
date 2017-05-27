@@ -1,4 +1,4 @@
-+#+TITLE: GNU Emacs configuration
+#+TITLE: GNU Emacs configuration
 #+OPTIONS: toc:4 h:4
 
 ** About
