@@ -576,7 +576,8 @@ Clojure and supporting modules.
          ("C-c v l" . magit-log-buffer-file)
          ("C-c v p" . magit-pull))
    :config (setq magit-save-repository-buffers 'dontask))
-#+END_SR
+#+END_SRC
+
 ** Themes
 *** setup
 #+BEGIN_SRC emacs-lisp :tangle yes

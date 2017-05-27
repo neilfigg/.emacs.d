@@ -342,12 +342,9 @@
          ("C-c v l" . magit-log-buffer-file)
          ("C-c v p" . magit-pull))
    :config (setq magit-save-repository-buffers 'dontask))
-#+END_SR
-** Themes
-*** setup
-#+BEGIN_SRC emacs-lisp :tangle yes
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  (add-to-list 'load-path "~/.emacs.d/themes")
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'load-path "~/.emacs.d/themes")
 
 (load-theme 'solarized-dark t)
 
