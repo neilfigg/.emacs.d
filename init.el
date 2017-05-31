@@ -86,24 +86,23 @@
     ;;(diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c r")))
 
-(use-package auto-complete
-  :ensure t
-  :init
-  (require 'auto-complete-config)
-  :config
-  (ac-config-default)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
-
-(use-package ac-cider
-  :ensure t
-  :config
-  (eval-after-load "auto-complete"
-    '(progn
-       (add-to-list 'ac-modes 'cider-mode)
-    (add-to-list 'ac-modes 'cider-repl-mode))))
-
 (use-package clojure-snippets
     :ensure t)
+
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode 1)
+  (diminish 'company-mode)
+  (setq company-idle-delay nil
+        company-minimum-prefix-length 0
+        company-selection-wrap-around t
+        company-tooltip-align-annotations t
+        company-tooltip-limit 16
+        company-require-match nil)
+  (bind-key "C-q" #'company-show-doc-buffer company-active-map)
+  :bind
+(("C-<tab>" . company-complete)))
 
 (use-package aggressive-indent
   :ensure t)

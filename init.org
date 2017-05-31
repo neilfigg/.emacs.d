@@ -144,20 +144,9 @@ Clojure and supporting modules.
               (unbind-key "C-j" cider-clojure-interaction-mode-map)
               (unbind-key "<remap> <paredit-newline>" cider-clojure-interaction-mode-map))))
 #+END_SRC
-
-*** package auto-complete -  [[https://github.com/auto-complete/auto-complete][GitHub]]
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package auto-complete
-  :ensure t
-  :init
-  (require 'auto-complete-config)
-  :config
-  (ac-config-default)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
-#+END_SRC
     
 *** package ac-cider -  [[https://github.com/clojure-emacs/ac-cider][GitHub]]
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package ac-cider
   :ensure t
   :config
@@ -182,6 +171,35 @@ Clojure and supporting modules.
 #+END_SRC
 
 ** Packages
+*** package company - [[http://company-mode.github.io/][Github]]
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package company
+  :ensure t
+  :config
+  (global-company-mode 1)
+  (diminish 'company-mode)
+  (setq company-idle-delay nil
+        company-minimum-prefix-length 0
+        company-selection-wrap-around t
+        company-tooltip-align-annotations t
+        company-tooltip-limit 16
+        company-require-match nil)
+  (bind-key "C-q" #'company-show-doc-buffer company-active-map)
+  :bind
+  (("C-<tab>" . company-complete)))
+#+END_SRC
+
+*** package auto-complete -  [[https://github.com/auto-complete/auto-complete][GitHub]]
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package auto-complete
+  :ensure t
+  :init
+  (require 'auto-complete-config)
+  :config
+  (ac-config-default)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
+#+END_SRC
+
 *** package aggerssive-indent-mode
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package aggressive-indent
@@ -281,24 +299,6 @@ Clojure and supporting modules.
     :config
     (yas/global-mode 1)
     (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "snippets")))
-#+END_SRC
-
-*** package company : Auto completion
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package company
-  :ensure t
-  :config
-  (global-company-mode 1)
-  (diminish 'company-mode)
-  (setq company-idle-delay nil
-        company-minimum-prefix-length 0
-        company-selection-wrap-around t
-        company-tooltip-align-annotations t
-        company-tooltip-limit 16
-        company-require-match nil)
-  (bind-key "C-q" #'company-show-doc-buffer company-active-map)
-  :bind
-(("C-<tab>" . company-complete)))
 #+END_SRC
 
 *** project-shells : multiple shells
