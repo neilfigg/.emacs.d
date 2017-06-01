@@ -145,17 +145,6 @@ Clojure and supporting modules.
               (unbind-key "<remap> <paredit-newline>" cider-clojure-interaction-mode-map))))
 #+END_SRC
     
-*** package ac-cider -  [[https://github.com/clojure-emacs/ac-cider][GitHub]]
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package ac-cider
-  :ensure t
-  :config
-  (eval-after-load "auto-complete"
-    '(progn
-       (add-to-list 'ac-modes 'cider-mode)
-    (add-to-list 'ac-modes 'cider-repl-mode))))
-#+END_SRC
-
 *** package clojure-snippets - [[https://github.com/mpenet/clojure-snippets][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-snippets
@@ -189,15 +178,15 @@ Clojure and supporting modules.
   (("C-<tab>" . company-complete)))
 #+END_SRC
 
-*** package auto-complete -  [[https://github.com/auto-complete/auto-complete][GitHub]]
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package auto-complete
+*** package neotree -
+#+BEGIN_SRC emacs-lisp :tangle yes 
+(use-package neotree
   :ensure t
   :init
-  (require 'auto-complete-config)
+  (setq neo-smart-open t
+        projectile-switch-project-action 'neotree-projectile-action)
   :config
-  (ac-config-default)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict"))
+  (global-set-key [f8] 'neotree-toggle))
 #+END_SRC
 
 *** package aggerssive-indent-mode

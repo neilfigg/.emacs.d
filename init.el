@@ -90,19 +90,27 @@
     :ensure t)
 
 (use-package company
-  :ensure t
-  :config
-  (global-company-mode 1)
-  (diminish 'company-mode)
-  (setq company-idle-delay nil
-        company-minimum-prefix-length 0
-        company-selection-wrap-around t
-        company-tooltip-align-annotations t
-        company-tooltip-limit 16
-        company-require-match nil)
-  (bind-key "C-q" #'company-show-doc-buffer company-active-map)
-  :bind
+:ensure t
+:config
+(global-company-mode 1)
+(diminish 'company-mode)
+(setq company-idle-delay nil
+      company-minimum-prefix-length 0
+      company-selection-wrap-around t
+      company-tooltip-align-annotations t
+      company-tooltip-limit 16
+      company-require-match nil)
+(bind-key "C-q" #'company-show-doc-buffer company-active-map)
+:bind
 (("C-<tab>" . company-complete)))
+
+(use-package neotree
+  :ensure t
+  :init
+  (setq neo-smart-open t
+        projectile-switch-project-action 'neotree-projectile-action)
+  :config
+  (global-set-key [f8] 'neotree-toggle))
 
 (use-package aggressive-indent
   :ensure t)
