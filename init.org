@@ -69,7 +69,7 @@ Clojure and supporting modules.
 (use-package clojure-mode
   :ensure t
   :config
-    ;;(diminish-major 'clojure-mode "clj")
+    (outline-minor-mode 1)
     (add-hook 'clojure-mode-hook #'enable-clj-refactor-mode)
     (add-hook 'clojure-mode-hook #'enable-paredit-mode)
     (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
@@ -131,9 +131,10 @@ Clojure and supporting modules.
     (interactive)
     (clj-refactor-mode 1)
     (yas-minor-mode 1) ; for adding require/use/import statements
-    ;;(diminish 'clj-refactor-mode)
+    (diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c r")))
 #+END_SRC
+
 *** package cider-interaction - [[https://github.com/clojure-emacs/cider/blob/master/cider-interaction.el][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package cider-interaction
@@ -178,7 +179,7 @@ Clojure and supporting modules.
   (("C-<tab>" . company-complete)))
 #+END_SRC
 
-*** package neotree -
+*** package neotree - [[https://github.com/jaypei/emacs-neotree][Github]]
 #+BEGIN_SRC emacs-lisp :tangle yes 
 (use-package neotree
   :ensure t
@@ -189,7 +190,7 @@ Clojure and supporting modules.
   (global-set-key [f8] 'neotree-toggle))
 #+END_SRC
 
-*** package aggerssive-indent-mode
+*** package aggressive-indent-mode
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package aggressive-indent
   :ensure t)

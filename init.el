@@ -27,7 +27,7 @@
 (use-package clojure-mode
   :ensure t
   :config
-    ;;(diminish-major 'clojure-mode "clj")
+    (outline-minor-mode 1)
     (add-hook 'clojure-mode-hook #'enable-clj-refactor-mode)
     (add-hook 'clojure-mode-hook #'enable-paredit-mode)
     (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
@@ -83,7 +83,7 @@
     (interactive)
     (clj-refactor-mode 1)
     (yas-minor-mode 1) ; for adding require/use/import statements
-    ;;(diminish 'clj-refactor-mode)
+    (diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c r")))
 
 (use-package clojure-snippets
