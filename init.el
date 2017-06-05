@@ -27,19 +27,11 @@
 (use-package clojure-mode
   :ensure t
   :config
-    (outline-minor-mode 1)
-    (add-hook 'clojure-mode-hook #'enable-clj-refactor-mode)
-    (add-hook 'clojure-mode-hook #'enable-paredit-mode)
-    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-    (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
+  (outline-minor-mode 1))
 
 (use-package cider
  :ensure t
  :config
-   ;; (diminish-major 'cider-repl-mode nil)
-   ;; (diminish-major 'cider-stacktrace-mode nil)
-   ;; (diminish-major 'nrepl-messages-mode nil)
-
  (setq cider-auto-select-error-buffer t
        cider-macroexpansion-print-metadata t
        cider-mode-line nil
@@ -57,34 +49,25 @@
        nrepl-buffer-name-show-port t
        nrepl-log-messages t
        nrepl-message-buffer-max-size 100000000
-       cider-test-show-report-on-success t)
-
- ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
- ;;(set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
-
- (add-hook 'cider-mode-hook #'enable-eldoc-mode)
- (add-hook 'cider-mode-hook #'ac-flyspell-workaround)
- (add-hook 'cider-mode-hook #'ac-cider-setup)
- (add-hook 'cider-repl-mode-hook #'enable-eldoc-mode)
- (add-hook 'cider-repl-mode-hook #'enable-clj-refactor-mode)
- (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
- (add-hook 'cider-repl-mode-hook #'ac-cider-setup))
+       cider-test-show-report-on-success t))
 
 (use-package clj-refactor
   :ensure t
   :commands
   enable-clj-refactor-mode
   :config
+  (add-hook 'clojure-mode-hook    #'enable-clj-refactor-mode)
+  (add-hook 'cider-repl-mode-hook #'enable-clj-refactor-mode)
   (setq cljr-eagerly-build-asts-on-startup nil
         cljr-eagerly-cache-macro-occurrences-on-startup nil
         cljr-favor-prefix-notation nil
-        cljr-magic-requires nil)
+        cljr-magic-requires :prompt)
   (defun enable-clj-refactor-mode ()
     (interactive)
     (clj-refactor-mode 1)
     (yas-minor-mode 1) ; for adding require/use/import statements
     (diminish 'clj-refactor-mode)
-    (cljr-add-keybindings-with-prefix "C-c r")))
+    (cljr-add-keybindinags-with-prefix "C-c C-m")))
 
 (use-package clojure-snippets
     :ensure t)
@@ -92,37 +75,43 @@
 (use-package company
 :ensure t
 :config
-(global-company-mode 1)
 (diminish 'company-mode)
-(setq company-idle-delay nil
-      company-minimum-prefix-length 0
-      company-selection-wrap-around t
-      company-tooltip-align-annotations t
-      company-tooltip-limit 16
-      company-require-match nil)
-(bind-key "C-q" #'company-show-doc-buffer company-active-map)
-:bind
-(("C-<tab>" . company-complete)))
+(add-hook 'cider-repl-mode-hook #'company-mode)
+(add-hook 'cider-mode-hook #'company-mode)
+(add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
+(add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+(setq 
+     ;; company-idle-delay nil ; never start completions automatically
+     ;; company-minimum-prefix-length 0
+     ;; company-selection-wrap-around t
+     ;; company-tooltip-align-annotations t
+     ;;company-tooltip-limit 16
+     ;; company-require-match nil
+ )
+(global-set-key (kbd "TAB") #'company-indent-or-complete-common))
 
 (use-package neotree
   :ensure t
   :init
   (setq neo-smart-open t
-        projectile-switch-project-action 'neotree-projectile-action)
+        projectile-switch-project-action #'neotree-projectile-action)
   :config
   (global-set-key [f8] 'neotree-toggle))
 
 (use-package aggressive-indent
-  :ensure t)
+  :ensure t
+  :config
+  (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
 
 (use-package eldoc
   :commands
   enable-eldoc-mode
   :config
-    (diminish 'eldoc-mode)
-    (setq eldoc-idle-delay 0)
-
-    (defun enable-eldoc-mode ()
+  (add-hook 'cider-mode-hook #'enable-eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'enable-eldoc-mode)
+  (diminish 'eldoc-mode)
+  (setq eldoc-idle-delay 0)
+  (defun enable-eldoc-mode ()
       (interactive)
       (eldoc-mode 1)))
 
@@ -143,8 +132,10 @@
 
 (use-package paredit
   :ensure t
- ;; :diminish paredit-mode
+  :diminish paredit-mode
   :config
+  (add-hook 'clojure-mode-hook          #'enable-paredit-mode)
+  (add-hook 'cider-repl-mode-hook       #'enable-paredit-mode)
   (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
   (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
@@ -172,12 +163,14 @@
 (use-package rainbow-delimiters
   :ensure t
   :config
+  (add-hook 'clojure-mode-hook    #'rainbow-delimiters-mode)
+  (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'lisp-mode-hook
             (lambda()
               (rainbow-delimiters-mode)
-              )))
-
-(global-highlight-parentheses-mode)
+              ))
+  (global-highlight-parentheses-mode)
+  )
 
 (use-package project-shells
    :ensure t

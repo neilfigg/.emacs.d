@@ -62,18 +62,15 @@ Initialise the archive, refresh the contents and setup use-package.
 
 ** Clojure
 
-Clojure and supporting modules.
+Clojure and supporting modules. Hooks are added to the defining library e.d. paredit hooks aren't 
+added to =use-package clojure-mode= or =use-package cider=, but rather to =use-package paredit=. So if I want to replace paredit with smartparens I need to make a change in only one place.
 
 *** package clojure-mode -  [[https://github.com/clojure-emacs/clojure-mode][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-mode
   :ensure t
   :config
-    (outline-minor-mode 1)
-    (add-hook 'clojure-mode-hook #'enable-clj-refactor-mode)
-    (add-hook 'clojure-mode-hook #'enable-paredit-mode)
-    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-    (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
+  (outline-minor-mode 1))
 #+END_SRC
 
 *** package-cider - [[https://github.com/clojure-emacs/cider][GitHub]]
@@ -81,10 +78,6 @@ Clojure and supporting modules.
  (use-package cider
   :ensure t
   :config
-    ;; (diminish-major 'cider-repl-mode nil)
-    ;; (diminish-major 'cider-stacktrace-mode nil)
-    ;; (diminish-major 'nrepl-messages-mode nil)
-
   (setq cider-auto-select-error-buffer t
         cider-macroexpansion-print-metadata t
         cider-mode-line nil
@@ -102,18 +95,7 @@ Clojure and supporting modules.
         nrepl-buffer-name-show-port t
         nrepl-log-messages t
         nrepl-message-buffer-max-size 100000000
-        cider-test-show-report-on-success t)
-
-  ;; TODO https://github.com/bbatsov/solarized-emacs/issues/231
-  ;;(set-face-attribute 'cider-deprecated-face nil :background nil :underline "light goldenrod")
-
-  (add-hook 'cider-mode-hook #'enable-eldoc-mode)
-  (add-hook 'cider-mode-hook #'ac-flyspell-workaround)
-  (add-hook 'cider-mode-hook #'ac-cider-setup)
-  (add-hook 'cider-repl-mode-hook #'enable-eldoc-mode)
-  (add-hook 'cider-repl-mode-hook #'enable-clj-refactor-mode)
-  (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
-  (add-hook 'cider-repl-mode-hook #'ac-cider-setup))
+        cider-test-show-report-on-success t))
 #+END_SRC
 
 *** package clj-refactor - [[https://github.com/clojure-emacs/clj-refactor.el][GitHub]]
@@ -123,16 +105,18 @@ Clojure and supporting modules.
   :commands
   enable-clj-refactor-mode
   :config
+  (add-hook 'clojure-mode-hook    #'enable-clj-refactor-mode)
+  (add-hook 'cider-repl-mode-hook #'enable-clj-refactor-mode)
   (setq cljr-eagerly-build-asts-on-startup nil
         cljr-eagerly-cache-macro-occurrences-on-startup nil
         cljr-favor-prefix-notation nil
-        cljr-magic-requires nil)
+        cljr-magic-requires :prompt)
   (defun enable-clj-refactor-mode ()
     (interactive)
     (clj-refactor-mode 1)
     (yas-minor-mode 1) ; for adding require/use/import statements
     (diminish 'clj-refactor-mode)
-    (cljr-add-keybindings-with-prefix "C-c r")))
+    (cljr-add-keybindinags-with-prefix "C-c C-m")))
 #+END_SRC
 
 *** package cider-interaction - [[https://github.com/clojure-emacs/cider/blob/master/cider-interaction.el][GitHub]]
@@ -166,17 +150,20 @@ Clojure and supporting modules.
   (use-package company
   :ensure t
   :config
-  (global-company-mode 1)
   (diminish 'company-mode)
-  (setq company-idle-delay nil
-        company-minimum-prefix-length 0
-        company-selection-wrap-around t
-        company-tooltip-align-annotations t
-        company-tooltip-limit 16
-        company-require-match nil)
-  (bind-key "C-q" #'company-show-doc-buffer company-active-map)
-  :bind
-  (("C-<tab>" . company-complete)))
+  (add-hook 'cider-repl-mode-hook #'company-mode)
+  (add-hook 'cider-mode-hook #'company-mode)
+  (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
+  (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+  (setq 
+       ;; company-idle-delay nil ; never start completions automatically
+       ;; company-minimum-prefix-length 0
+       ;; company-selection-wrap-around t
+       ;; company-tooltip-align-annotations t
+       ;;company-tooltip-limit 16
+       ;; company-require-match nil
+   )
+  (global-set-key (kbd "TAB") #'company-indent-or-complete-common))
 #+END_SRC
 
 *** package neotree - [[https://github.com/jaypei/emacs-neotree][Github]]
@@ -185,7 +172,7 @@ Clojure and supporting modules.
   :ensure t
   :init
   (setq neo-smart-open t
-        projectile-switch-project-action 'neotree-projectile-action)
+        projectile-switch-project-action #'neotree-projectile-action)
   :config
   (global-set-key [f8] 'neotree-toggle))
 #+END_SRC
@@ -193,7 +180,9 @@ Clojure and supporting modules.
 *** package aggressive-indent-mode
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package aggressive-indent
-  :ensure t)
+  :ensure t
+  :config
+  (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
 #+END_SRC
 
 *** package eldoc :
@@ -202,10 +191,11 @@ Clojure and supporting modules.
   :commands
   enable-eldoc-mode
   :config
-    (diminish 'eldoc-mode)
-    (setq eldoc-idle-delay 0)
-
-    (defun enable-eldoc-mode ()
+  (add-hook 'cider-mode-hook #'enable-eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'enable-eldoc-mode)
+  (diminish 'eldoc-mode)
+  (setq eldoc-idle-delay 0)
+  (defun enable-eldoc-mode ()
       (interactive)
       (eldoc-mode 1)))
 #+END_SRC
@@ -238,8 +228,10 @@ Clojure and supporting modules.
 #+BEGIN_SRC emacs-lisp :tangle yes
   (use-package paredit
     :ensure t
-   ;; :diminish paredit-mode
+    :diminish paredit-mode
     :config
+    (add-hook 'clojure-mode-hook          #'enable-paredit-mode)
+    (add-hook 'cider-repl-mode-hook       #'enable-paredit-mode)
     (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
     (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
     (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
@@ -273,15 +265,17 @@ Clojure and supporting modules.
   (use-package rainbow-delimiters
     :ensure t
     :config
+    (add-hook 'clojure-mode-hook    #'rainbow-delimiters-mode)
+    (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode)
     (add-hook 'lisp-mode-hook
               (lambda()
                 (rainbow-delimiters-mode)
-                )))
-
-  (global-highlight-parentheses-mode)
+                ))
+    (global-highlight-parentheses-mode)
+    )
 #+END_SRC
 
-*** package yasnippets : Snippets
+*** package yasnippets : disabled
 #+BEGIN_SRC emacs-lisp :tangle no
   (use-package yasnippet
     :ensure t
@@ -696,19 +690,20 @@ file name and a format. For the format, type orgtbl-to and press TAB
 to see the available options (e.g. orgtbl-to-csv will convert to csv
 in the output file).
 #+BEGIN_SRC emacs-lisp :tangle yes :tangle no
-| Command            | Behaviour                               | Package        | Description                                                                              |
-|--------------------+-----------------------------------------+----------------+------------------------------------------------------------------------------------------|
-| C-c s <shell key>  | create new shell or change to one       | project-shells | The default <shell key>s are “1”, “2”, “3”, “4”, “5”, “6”, “7”, “8”, “9”, “0”, “-“, “=”, |
-| M-p                | up                                      | eshell         | scroll backward previous commands                                                        |
-| M-n                | down                                    | eshell         | scroll forward previous commands                                                         |
-| C-c C-c            | re-align table                          | org            |                                                                                          |
-| C-M f or b         | move between fns                        | paredit        | Move between functions in a namespace                                                    |
-| C-u {              | wrap all symbols till end of expression | paredit        | (merge my-map :a "a" :b "b") becomes (merge my-ma {:a "a" :b "b"})                       |
-| M-x eval-last-sexp | eval emacs lisp                         | emacs lisp     | Help with debugging init.el forms                                                        |
-| C-c p f            | find file                               | projectile     | File a file in the project                                                               |
-| C-c C-z            | switch to repl or last clojure buffer   | cider          |                                                                                          |
-| C-M-i              | auto-complete code                      | ac-cider       |                                                                                          |
-|                    |                                         |                |                                                                                          |
+| Command            | Behaviour                               | Package        | Description                                                                              |   |
+|--------------------+-----------------------------------------+----------------+------------------------------------------------------------------------------------------+---|
+| C-c s <shell key>  | create new shell or change to one       | project-shells | The default <shell key>s are “1”, “2”, “3”, “4”, “5”, “6”, “7”, “8”, “9”, “0”, “-“, “=”, |   |
+| M-p                | up                                      | eshell         | scroll backward previous commands                                                        |   |
+| M-n                | down                                    | eshell         | scroll forward previous commands                                                         |   |
+| C-c C-c            | re-align table                          | org            |                                                                                          |   |
+| C-M f or b         | move between fns                        | paredit        | Move between functions in a namespace                                                    |   |
+| C-u {              | wrap all symbols till end of expression | paredit        | (merge my-map :a "a" :b "b") becomes (merge my-ma {:a "a" :b "b"})                       |   |
+| M-x eval-last-sexp | eval emacs lisp                         | emacs lisp     | Help with debugging init.el forms                                                        |   |
+| C-c p f            | find file                               | projectile     | File a file in the project                                                               |   |
+| C-c C-z            | switch to repl or last clojure buffer   | cider          |                                                                                          |   |
+| C-M-i              | auto-complete code                      | ac-cider       |                                                                                          |   |
+| C-c C-m hh         | clj-refactor hydra menu                 | clj-refactor   |                                                                                          |   |
+|                    |                                         |                |                               
 #+END_SRC
 
 
