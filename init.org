@@ -116,7 +116,7 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
     (clj-refactor-mode 1)
     (yas-minor-mode 1) ; for adding require/use/import statements
     (diminish 'clj-refactor-mode)
-    (cljr-add-keybindinags-with-prefix "C-c C-m")))
+    (cljr-add-keybindings-with-prefix "C-c C-m")))
 #+END_SRC
 
 *** package cider-interaction - [[https://github.com/clojure-emacs/cider/blob/master/cider-interaction.el][GitHub]]

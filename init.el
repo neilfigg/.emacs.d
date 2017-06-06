@@ -67,7 +67,7 @@
     (clj-refactor-mode 1)
     (yas-minor-mode 1) ; for adding require/use/import statements
     (diminish 'clj-refactor-mode)
-    (cljr-add-keybindinags-with-prefix "C-c C-m")))
+    (cljr-add-keybindings-with-prefix "C-c C-m")))
 
 (use-package clojure-snippets
     :ensure t)
