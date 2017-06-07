@@ -569,10 +569,25 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
   (add-to-list 'load-path "~/.emacs.d/themes")
 #+END_SRC
 
+
+*** dracula
+This is manually installed. You can find the theme [[https://github.com/dracula/dracula-theme][here]]
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+ (load-theme 'dracula t)
+#+END_SRC
+
+*** zenburn
+This is manually installed. You can find the theme [[https://raw.githubusercontent.com/bbatsov/zenburn-emacs/master/zenburn-theme.el][here]]
+
+#+BEGIN_SRC emacs-lisp :tangle no
+ (load-theme 'zenburn t)
+#+END_SRC
+
 *** solarised
 This is manually installed. You can find the theme [[https://github.com/bbatsov/solarized-emacs][here]]
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
  (load-theme 'solarized-dark t)
 #+END_SRC
 *** doom-one
