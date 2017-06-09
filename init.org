@@ -570,17 +570,10 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
   (add-to-list 'load-path "~/.emacs.d/themes")
 #+END_SRC
 
-*** dracula
-This is manually installed. You can find the theme [[https://github.com/dracula/dracula-theme][here]]
-
-Changed the default minibuffer highlight colour from the default yellowish to white, by adding =(set-face-foreground 'minibuffer-prompt "white")=
-
-#+BEGIN_SRC emacs-lisp :tangle no
- (load-theme 'dracula t)
-#+END_SRC
-
 *** zenburn
 This is manually installed. You can find the theme [[https://raw.githubusercontent.com/bbatsov/zenburn-emacs/master/zenburn-theme.el][here]]
+
+The following config replaces greens with browns.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (defvar zenburn-override-colors-alist
@@ -602,51 +595,6 @@ This is manually installed. You can find the theme [[https://raw.githubuserconte
 (load-theme 'zenburn t)
 #+END_SRC
 
-*** solarised
-This is manually installed. You can find the theme [[https://github.com/bbatsov/solarized-emacs][here]]
-
-#+BEGIN_SRC emacs-lisp :tangle no
- (load-theme 'solarized-dark t)
-#+END_SRC
-
-*** doom-one
-This is manually installed. You can find the theme [[https://github.com/hlissner/emacs-doom-theme][here]]
-
-#+BEGIN_SRC emacs-lisp :tangle no
-;;; Settings (defaults)
-(setq doom-enable-bold t    ; if nil, bolding are universally disabled
-      doom-enable-italic t  ; if nil, italics are universally disabled
-
-      ;; doom-one specific settings
-      doom-one-brighter-modeline nil
-      doom-one-brighter-comments nil)
-
-;; Load the theme (doom-one, doom-dark, etc.)
-(load-theme 'doom-one t)
-
-;;; OPTIONAL
-;; brighter source buffers (that represent files)
-(add-hook 'find-file-hook 'doom-buffer-mode-maybe)
-;; ...if you use auto-revert-mode
-(add-hook 'after-revert-hook 'doom-buffer-mode-maybe)
-;; And you can brighten other buffers (unconditionally) with:
-(add-hook 'ediff-prepare-buffer-hook 'doom-buffer-mode)
-
-;; brighter minibuffer when active
-(add-hook 'minibuffer-setup-hook 'doom-brighten-minibuffer)
-
-;; Enable custom neotree theme
-(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
-
-;; Enable nlinum line highlighting
-(doom-themes-nlinum-config)   ; requires nlinum and hl-line-mode
-
-;; Necessary for org-mode
-(setq org-fontify-whole-heading-line t
-      org-fontify-done-headline t
-      org-fontify-quote-and-verse-blocks t)
-
-#+END_SRC
 ** Writing
 *** package markdown-mode
 #+BEGIN_SRC emacs-lisp :tangle yes
