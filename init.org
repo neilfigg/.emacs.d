@@ -575,15 +575,31 @@ This is manually installed. You can find the theme [[https://github.com/dracula/
 
 Changed the default minibuffer highlight colour from the default yellowish to white, by adding =(set-face-foreground 'minibuffer-prompt "white")=
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
  (load-theme 'dracula t)
 #+END_SRC
 
 *** zenburn
 This is manually installed. You can find the theme [[https://raw.githubusercontent.com/bbatsov/zenburn-emacs/master/zenburn-theme.el][here]]
 
-#+BEGIN_SRC emacs-lisp :tangle no
- (load-theme 'zenburn t)
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defvar zenburn-override-colors-alist
+  '(("zenburn-bg-2"     . "#000000")
+    ("zenburn-bg-1"     . "#2B2B2B")
+    ("zenburn-bg-05"    . "#3F3F3F")
+    ("zenburn-bg"       . "#383838")
+    ("zenburn-bg+05"    . "#a9a9a9")
+    ("zenburn-bg+1"     . "#2F2F2F")
+    ("zenburn-bg+2"     . "#434343")
+    ("zenburn-bg+3"     . "#585858")
+    ("zenburn-green-1"  . "#c3b17a") ;; changed the greens to browns
+    ("zenburn-green"    . "#bda96c")
+    ("zenburn-green+1"  . "#aa9861")
+    ("zenburn-green+2"  . "#978756")
+    ("zenburn-green+3"  . "#84764b")
+    ("zenburn-green+4"  . "#716540")
+    ("zenburn-cyan"     . "#d0c298"))) ;; changed cyan to light brown
+(load-theme 'zenburn t)
 #+END_SRC
 
 *** solarised
@@ -592,6 +608,7 @@ This is manually installed. You can find the theme [[https://github.com/bbatsov/
 #+BEGIN_SRC emacs-lisp :tangle no
  (load-theme 'solarized-dark t)
 #+END_SRC
+
 *** doom-one
 This is manually installed. You can find the theme [[https://github.com/hlissner/emacs-doom-theme][here]]
 
