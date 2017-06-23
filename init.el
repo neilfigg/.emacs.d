@@ -24,6 +24,13 @@
 (eval-when-compile
   (require 'use-package))
 
+(use-package no-littering
+  :ensure t
+  :config
+  (require 'recentf)
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory))
+
 (use-package clojure-mode
   :ensure t
   :config
@@ -123,7 +130,8 @@
   (setq projectile-cache-file (concat user-emacs-directory "projectile/cache")
         projectile-known-projects-file (concat user-emacs-directory "projectile/bookmarks.eld")
         projectile-use-git-grep t
-        projectile-switch-project-action 'projectile-dired))
+        projectile-switch-project-action 'projectile-dired)
+  (projectile-global-mode))
 
 (use-package s
  :ensure t)
@@ -172,19 +180,6 @@
               ))
   (global-highlight-parentheses-mode)
   )
-
-(use-package project-shells
-   :ensure t
-   :config
- (global-project-shells-mode)
- (setf project-shells-setup
-`(("redplan" .
-   (("0" .
-     ("build" "~/data/projects/redplan"))
-    ("9" .
-     ("files" "~/data/data/files"))
-    ("8" .
-     ("redplan" "~/data/projects/redplan")))))))
 
 (use-package dash
   :ensure t)
@@ -356,6 +351,9 @@
     ("zenburn-bg+1"     . "#2F2F2F")
     ("zenburn-bg+2"     . "#434343")
     ("zenburn-bg+3"     . "#585858")
+    ("zenburn-yellow"   . "#F0DFAF")
+    ("zenburn-yellow-1" . "#E0CF9F")
+    ("zenburn-yellow-2" . "#e2d8bb") ;; lighter shade in minibuffer highlighting
     ("zenburn-green-1"  . "#c3b17a") ;; changed the greens to browns
     ("zenburn-green"    . "#bda96c")
     ("zenburn-green+1"  . "#aa9861")
@@ -373,7 +371,7 @@
 
 (setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
       auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save" t))
-      auto-save-list-file-prefix "~/.emacs.d/tauto-save"
+      auto-save-list-file-prefix "~/.emacs.d/auto-save"
       delete-by-moving-to-trash t trash-directory "~/.Trash/emacs")
 
 ;; https://www.emacswiki.org/emacs/BackupFiles
