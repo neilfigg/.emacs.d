@@ -48,7 +48,8 @@ Initialise the archive, refresh the contents and setup use-package.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (package-initialize)
 
-(unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
+(unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/org"))
+             (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
              (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
              (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
 
@@ -559,7 +560,7 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
 #+END_SRC
 
 ** Themes
-*** setup
+*** setup disabled
 #+BEGIN_SRC emacs-lisp :tangle yes
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
   (add-to-list 'load-path "~/.emacs.d/themes")
@@ -568,9 +569,23 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
 *** zenburn
 This is manually installed. You can find the theme [[https://raw.githubusercontent.com/bbatsov/zenburn-emacs/master/zenburn-theme.el][here]]
 
-The following config replaces greens with browns.
+The following config changes the default background colours to be slightly darker. 
+To view the overridden colors, load the init.el and load the minor =rainbow-mode=
 
 #+BEGIN_SRC emacs-lisp :tangle yes
+(use-package rainbow-mode                   
+  :ensure t)
+
+(defvar zenburn-override-colors-alist
+  '(("zenburn-bg+05" . "#282828")
+    ("zenburn-bg+1"  . "#2F2F2F")
+    ("zenburn-bg+2"  . "#3F3F3F")
+    ("zenburn-bg+3"  . "#4F4F4F")))
+(load-theme 'zenburn t)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+;; creates a darker background and replaces greens with browns
 (defvar zenburn-override-colors-alist
   '(("zenburn-bg-2"     . "#000000")
     ("zenburn-bg-1"     . "#2B2B2B")

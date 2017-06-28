@@ -13,7 +13,8 @@
 
 (package-initialize)
 
-(unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
+(unless (and (file-exists-p (concat user-emacs-directory "elpa/archives/org"))
+             (file-exists-p (concat user-emacs-directory "elpa/archives/gnu"))
              (file-exists-p (concat user-emacs-directory "elpa/archives/melpa"))
              (file-exists-p (concat user-emacs-directory "elpa/archives/melpa-stable"))))
 
@@ -342,25 +343,14 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (add-to-list 'load-path "~/.emacs.d/themes")
 
+(use-package rainbow-mode                   
+  :ensure t)
+
 (defvar zenburn-override-colors-alist
-  '(("zenburn-bg-2"     . "#000000")
-    ("zenburn-bg-1"     . "#2B2B2B")
-    ("zenburn-bg-05"    . "#3F3F3F")
-    ("zenburn-bg"       . "#383838")
-    ("zenburn-bg+05"    . "#a9a9a9")
-    ("zenburn-bg+1"     . "#2F2F2F")
-    ("zenburn-bg+2"     . "#434343")
-    ("zenburn-bg+3"     . "#585858")
-    ("zenburn-yellow"   . "#F0DFAF")
-    ("zenburn-yellow-1" . "#E0CF9F")
-    ("zenburn-yellow-2" . "#e2d8bb") ;; lighter shade in minibuffer highlighting
-    ("zenburn-green-1"  . "#c3b17a") ;; changed the greens to browns
-    ("zenburn-green"    . "#bda96c")
-    ("zenburn-green+1"  . "#aa9861")
-    ("zenburn-green+2"  . "#978756")
-    ("zenburn-green+3"  . "#84764b")
-    ("zenburn-green+4"  . "#716540")
-    ("zenburn-cyan"     . "#d0c298"))) ;; changed cyan to light brown
+  '(("zenburn-bg+05" . "#282828")
+    ("zenburn-bg+1"  . "#2F2F2F")
+    ("zenburn-bg+2"  . "#3F3F3F")
+    ("zenburn-bg+3"  . "#4F4F4F")))
 (load-theme 'zenburn t)
 
 (use-package markdown-mode
