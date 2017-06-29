@@ -221,8 +221,7 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
   (setq projectile-cache-file (concat user-emacs-directory "projectile/cache")
         projectile-known-projects-file (concat user-emacs-directory "projectile/bookmarks.eld")
         projectile-use-git-grep t
-        projectile-switch-project-action 'projectile-dired)
-  (projectile-global-mode))
+        projectile-switch-project-action 'projectile-dired))
 #+END_SRC
 
 *** package s - [[ https://github.com/magnars/s.el][GitHub]]
