@@ -144,7 +144,8 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
 *** package clojure-snippets - [[https://github.com/mpenet/clojure-snippets][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-snippets
-    :ensure t)
+    :ensure t
+)
 #+END_SRC
 
 *** package cider-hydra -  [[https://github.com/clojure-emacs/cider-hydra/blob/master/cider-hydra.el][GitHub]]
@@ -167,15 +168,20 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
   (add-hook 'cider-mode-hook #'company-mode)
   (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
   (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
-  (setq 
-       ;; company-idle-delay nil ; never start completions automatically
-       ;; company-minimum-prefix-length 0
-       ;; company-selection-wrap-around t
-       ;; company-tooltip-align-annotations t
-       ;;company-tooltip-limit 16
-       ;; company-require-match nil
-   )
   (global-set-key (kbd "TAB") #'company-indent-or-complete-common))
+#+END_SRC
+
+*** package projectile
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode 1)
+  (diminish 'projectile-mode)
+  (setq projectile-cache-file (concat user-emacs-directory "projectile/cache")
+        projectile-known-projects-file (concat user-emacs-directory "projectile/bookmarks.eld")
+        projectile-use-git-grep t
+        projectile-switch-project-action 'projectile-dired))
 #+END_SRC
 
 *** package neotree - [[https://github.com/jaypei/emacs-neotree][Github]]
@@ -210,18 +216,6 @@ added to =use-package clojure-mode= or =use-package cider=, but rather to =use-p
   (defun enable-eldoc-mode ()
       (interactive)
       (eldoc-mode 1)))
-#+END_SRC
-
-*** package projectile
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package projectile
-  :config
-  (projectile-global-mode 1)
-  (diminish 'projectile-mode)
-  (setq projectile-cache-file (concat user-emacs-directory "projectile/cache")
-        projectile-known-projects-file (concat user-emacs-directory "projectile/bookmarks.eld")
-        projectile-use-git-grep t
-        projectile-switch-project-action 'projectile-dired))
 #+END_SRC
 
 *** package s - [[ https://github.com/magnars/s.el][GitHub]]

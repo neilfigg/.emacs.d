@@ -78,7 +78,8 @@
     (cljr-add-keybindings-with-prefix "C-c C-m")))
 
 (use-package clojure-snippets
-    :ensure t)
+    :ensure t
+)
 
 (use-package company
 :ensure t
@@ -89,15 +90,17 @@
 (add-hook 'cider-mode-hook #'company-mode)
 (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
 (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
-(setq 
-     ;; company-idle-delay nil ; never start completions automatically
-     ;; company-minimum-prefix-length 0
-     ;; company-selection-wrap-around t
-     ;; company-tooltip-align-annotations t
-     ;;company-tooltip-limit 16
-     ;; company-require-match nil
- )
 (global-set-key (kbd "TAB") #'company-indent-or-complete-common))
+
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode 1)
+  (diminish 'projectile-mode)
+  (setq projectile-cache-file (concat user-emacs-directory "projectile/cache")
+        projectile-known-projects-file (concat user-emacs-directory "projectile/bookmarks.eld")
+        projectile-use-git-grep t
+        projectile-switch-project-action 'projectile-dired))
 
 (use-package neotree
   :ensure t
@@ -123,15 +126,6 @@
   (defun enable-eldoc-mode ()
       (interactive)
       (eldoc-mode 1)))
-
-(use-package projectile
-  :config
-  (projectile-global-mode 1)
-  (diminish 'projectile-mode)
-  (setq projectile-cache-file (concat user-emacs-directory "projectile/cache")
-        projectile-known-projects-file (concat user-emacs-directory "projectile/bookmarks.eld")
-        projectile-use-git-grep t
-        projectile-switch-project-action 'projectile-dired))
 
 (use-package s
  :ensure t)
@@ -403,7 +397,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (clojure-snippets clj-refactor cider clojure-mode yasnippet which-key use-package spinner seq s rainbow-mode rainbow-delimiters queue paredit-everywhere no-littering neotree multiple-cursors markdown-mode magit ivy-hydra inflections htmlize highlight-parentheses expand-region edn counsel-projectile company bm aggressive-indent ace-window ace-jump-mode))))
+    (htmlize markdown-mode rainbow-mode magit expand-region ace-jump-mode ace-window which-key ivy-hydra counsel-projectile counsel bm dash rainbow-delimiters highlight-parentheses paredit-everywhere aggressive-indent neotree projectile company clojure-snippets use-package no-littering clj-refactor))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
