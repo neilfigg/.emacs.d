@@ -33,11 +33,26 @@
 
 (use-package clojure-mode
   :ensure t
+  :pin melpa-stable
+  :init
+  (add-hook 'clojure-mode-hook #'eldoc-mode)
+  (add-hook 'clojure-mode-hook #'paredit-mode)
+  (add-hook 'clojure-mode-hook #'rainbow-delimeters-mode)
+  (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+  (add-hook 'clojure-mode-hook #'subword-mode)
+  (add-hook 'clojure-mode-hook #'cider-mode)
+  (add-hook 'clojure-mode-hook #'clj-refactor-mode)
   :config
   (outline-minor-mode 1))
 
 (use-package cider
  :ensure t
+ :pin melpa-stable
+ :init
+ (add-hook 'cider-mode-hook #'clj-refactor-mode)
+ (add-hook 'cider-mode-hook #'company-mode)
+ (add-hook 'cider-repl-mode-hook #'company-mode)
+ :diminish subword-mode
  :config
  (setq cider-auto-select-error-buffer t
        cider-macroexpansion-print-metadata t
@@ -60,6 +75,7 @@
 
 (use-package clj-refactor
   :ensure t
+  :pin melpa-stable
   :commands
   enable-clj-refactor-mode
   :config
@@ -93,7 +109,7 @@
      ;; company-minimum-prefix-length 0
      ;; company-selection-wrap-around t
      ;; company-tooltip-align-annotations t
-     ;;company-tooltip-limit 16
+     ;; company-tooltip-limit 16
      ;; company-require-match nil
  )
 (global-set-key (kbd "TAB") #'company-indent-or-complete-common))
@@ -166,8 +182,7 @@
   :config
   (add-hook 'emacs-lisp-mode-hook
             (lambda()
-              (highlight-parentheses-mode)
-              )))
+              (highlight-parentheses-mode))))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -178,8 +193,7 @@
             (lambda()
               (rainbow-delimiters-mode)
               ))
-  (global-highlight-parentheses-mode)
-  )
+  (global-highlight-parentheses-mode))
 
 (use-package dash
   :ensure t)
