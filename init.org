@@ -1,5 +1,7 @@
-#+TITLE: GNU Emacs configuration
-#+OPTIONS: toc:4 h:4
+#+TITLE: GNU Emacs configuration for Clojure
+#+AUTHOR: Neil Figg
+#+EMAIL:  neil.figg@gmail.com
+#+TAGS:   emacs clojure cider luminus leiningen
 
 ** About
 This is my Clojure centric configuration file for GNU Emacs, using literal programming with org-babel.
@@ -23,6 +25,15 @@ Some packages are not being tangled =tangle no=
 (setq user-mail-address "neil.figg@gmail.com")
 #+END_SRC
 
+** Leiningen and Luminus
+
+I use [[http://www.luminusweb.net/][Luminus]] as my template when writing apps, and [[https://github.com/technomancy/leiningen][Leinengen]] to build, run and execute tests. The following =~/.lein/profiles.clj= configures Cider so that after I type =lein run= from my project root dir, from Emacs I can use =cider-connect= to connect to the REPL and debug my app.
+
+  ={:repl {:plugins [[cider/cider-nrepl "0.14.0"]
+                     [refactor-nrepl "2.3.1"]]
+           :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]]}}
+           :dependencies [[org.clojure/tools.nrepl "0.2.12"]]}}=
+ 
 ** Setup Packages
 
 The following package archives are used:
@@ -149,6 +160,7 @@ Clojure and supporting modules.
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package cider-interaction
   :ensure t
+  :pin melpa-stable
   :config
   (add-hook 'cider-clojure-interaction-mode-hook
             (lambda ()
