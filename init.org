@@ -29,10 +29,12 @@ Some packages are not being tangled =tangle no=
 
 I use [[http://www.luminusweb.net/][Luminus]] as my template when writing apps, and [[https://github.com/technomancy/leiningen][Leinengen]] to build, run and execute tests. The following =~/.lein/profiles.clj= configures Cider so that after I type =lein run= from my project root dir, from Emacs I can use =cider-connect= to connect to the REPL and debug the code.
 
-  ={:repl {:plugins [[cider/cider-nrepl "0.14.0"]
-                     [refactor-nrepl "2.3.1"]]
-           :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]]}}
-           :dependencies [[org.clojure/tools.nrepl "0.2.12"]]}}=
+#+BEGIN_SRC emacs-lisp :tangle no
+  {:repl {:plugins [[cider/cider-nrepl "0.14.0"]
+                    [refactor-nrepl "2.3.1"]]
+          :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]]}}
+          :dependencies [[org.clojure/tools.nrepl "0.2.12"]]}}
+#+END_SRC
  
 ** Setup Packages
 
