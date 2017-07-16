@@ -35,7 +35,7 @@
 (use-package clojure-mode
   :ensure t
   :pin melpa-stable
-  :init
+  :config
   (add-hook 'clojure-mode-hook #'clj-refactor-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
   (add-hook 'clojure-mode-hook #'eldoc-mode)
@@ -49,7 +49,7 @@
 (use-package cider
  :ensure t
  :pin melpa-stable
- :init
+ :config
  (add-hook 'cider-mode-hook #'clj-refactor-mode)
  (add-hook 'cider-repl-mode-hook #'company-mode)
  (add-hook 'cider-mode-hook #'company-mode)
@@ -139,10 +139,9 @@
 
 (use-package neotree
   :ensure t
-  :init
+  :config
   (setq neo-smart-open t
         projectile-switch-project-action #'neotree-projectile-action)
-  :config
   (global-set-key [f8] 'neotree-toggle))
 
 (use-package aggressive-indent

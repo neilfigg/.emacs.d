@@ -93,7 +93,7 @@ Clojure and supporting packages.
 (use-package clojure-mode
   :ensure t
   :pin melpa-stable
-  :init
+  :config
   (add-hook 'clojure-mode-hook #'clj-refactor-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
   (add-hook 'clojure-mode-hook #'eldoc-mode)
@@ -110,12 +110,11 @@ Clojure and supporting packages.
  (use-package cider
   :ensure t
   :pin melpa-stable
-  :init
+  :config
   (add-hook 'cider-mode-hook #'clj-refactor-mode)
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
   :diminish subword-mode
-  :config
   (setq cider-auto-select-error-buffer t
         cider-macroexpansion-print-metadata t
         cider-mode-line nil
@@ -531,7 +530,7 @@ TODO: Their wiki mentiions it makes their macros look nicer, but I may have the 
                      )))
 #+END_SRC
 
-*** fn global-prettify-symbols-mode
+*** fn global-prettify-symbols-mode - display “lambda” as “λ”
 #+BEGIN_SRC emacs-lisp :tangle yes
   (global-prettify-symbols-mode 1)
 #+END_SRC
