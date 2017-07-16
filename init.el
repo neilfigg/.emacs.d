@@ -36,13 +36,13 @@
   :ensure t
   :pin melpa-stable
   :init
+  (add-hook 'clojure-mode-hook #'clj-refactor-mode)
+  (add-hook 'clojure-mode-hook #'cider-mode)
   (add-hook 'clojure-mode-hook #'eldoc-mode)
   (add-hook 'clojure-mode-hook #'paredit-mode)
-  (add-hook 'clojure-mode-hook #'rainbow-delimeters-mode)
+  ;;(add-hook 'clojure-mode-hook #'rainbow-delimeters-mode)
   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
-  (add-hook 'clojure-mode-hook #'cider-mode)
-  (add-hook 'clojure-mode-hook #'clj-refactor-mode)
   :config
   (outline-minor-mode 1))
 
@@ -51,8 +51,8 @@
  :pin melpa-stable
  :init
  (add-hook 'cider-mode-hook #'clj-refactor-mode)
- (add-hook 'cider-mode-hook #'company-mode)
  (add-hook 'cider-repl-mode-hook #'company-mode)
+ (add-hook 'cider-mode-hook #'company-mode)
  :diminish subword-mode
  :config
  (setq cider-auto-select-error-buffer t
@@ -93,6 +93,18 @@
     (diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c C-m")))
 
+(use-package clojure-mode
+  :config
+  (define-clojure-indent
+    (defroutes 'defun)
+    (GET 2)
+    (POST 2)
+    (PUT 2)
+    (DELETE 2)
+    (HEAD 2)
+    (ANY 2)
+    (context 2)))
+
 (use-package clojure-snippets
     :ensure t
 )
@@ -104,8 +116,8 @@
 (add-hook 'clojure-mode-hook    #'company-mode)
 (add-hook 'cider-repl-mode-hook #'company-mode)
 (add-hook 'cider-mode-hook #'company-mode)
-(add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
-(add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+;;(add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
+;;(add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
 ;;(setq 
      ;; company-idle-delay nil ; never start completions automatically
      ;; company-minimum-prefix-length 0

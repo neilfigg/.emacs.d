@@ -27,7 +27,7 @@ Some packages are not being tangled =tangle no=
 
 ** Leiningen and Luminus
 
-I use [[http://www.luminusweb.net/][Luminus]] as my template when writing apps, and [[https://github.com/technomancy/leiningen][Leinengen]] to build, run and execute tests. The following =~/.lein/profiles.clj= configures Cider so that after I type =lein run= from my project root dir, from Emacs I can use =cider-connect= to connect to the REPL and debug my app.
+I use [[http://www.luminusweb.net/][Luminus]] as my template when writing apps, and [[https://github.com/technomancy/leiningen][Leinengen]] to build, run and execute tests. The following =~/.lein/profiles.clj= configures Cider so that after I type =lein run= from my project root dir, from Emacs I can use =cider-connect= to connect to the REPL and debug the code.
 
   ={:repl {:plugins [[cider/cider-nrepl "0.14.0"]
                      [refactor-nrepl "2.3.1"]]
@@ -72,7 +72,7 @@ Initialise the archive, refresh the contents and setup use-package.
   (require 'use-package))
 #+END_SRC
 
-Keep .emacs.d clean with no-littering [[https://github.com/tarsius/no-littering][GitHub]]
+Keep your system clean with no-littering [[https://github.com/tarsius/no-littering][GitHub]]
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package no-littering
@@ -84,34 +84,34 @@ Keep .emacs.d clean with no-littering [[https://github.com/tarsius/no-littering]
 #+END_SRC
 
 ** Clojure
-Clojure and supporting modules. 
+Clojure and supporting packages. 
 
-*** package clojure-mode -  [[https://github.com/clojure-emacs/clojure-mode][GitHub]]
+*** clojure-mode -  [[https://github.com/clojure-emacs/clojure-mode][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-mode
   :ensure t
   :pin melpa-stable
   :init
+  (add-hook 'clojure-mode-hook #'clj-refactor-mode)
+  (add-hook 'clojure-mode-hook #'cider-mode)
   (add-hook 'clojure-mode-hook #'eldoc-mode)
   (add-hook 'clojure-mode-hook #'paredit-mode)
-  (add-hook 'clojure-mode-hook #'rainbow-delimeters-mode)
+  ;;(add-hook 'clojure-mode-hook #'rainbow-delimeters-mode)
   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
-  (add-hook 'clojure-mode-hook #'cider-mode)
-  (add-hook 'clojure-mode-hook #'clj-refactor-mode)
   :config
   (outline-minor-mode 1))
 #+END_SRC
 
-*** package-cider - [[https://github.com/clojure-emacs/cider][GitHub]]
+*** cider - [[https://github.com/clojure-emacs/cider][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
  (use-package cider
   :ensure t
   :pin melpa-stable
   :init
   (add-hook 'cider-mode-hook #'clj-refactor-mode)
-  (add-hook 'cider-mode-hook #'company-mode)
   (add-hook 'cider-repl-mode-hook #'company-mode)
+  (add-hook 'cider-mode-hook #'company-mode)
   :diminish subword-mode
   :config
   (setq cider-auto-select-error-buffer t
@@ -134,7 +134,7 @@ Clojure and supporting modules.
         cider-test-show-report-on-success t))
 #+END_SRC
 
-*** package clj-refactor - [[https://github.com/clojure-emacs/clj-refactor.el][GitHub]]
+*** clj-refactor - [[https://github.com/clojure-emacs/clj-refactor.el][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clj-refactor
   :ensure t
@@ -155,19 +155,25 @@ Clojure and supporting modules.
     (diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c C-m")))
 #+END_SRC
-
-*** package cider-interaction - [[https://github.com/clojure-emacs/cider/blob/master/cider-interaction.el][GitHub]]
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package cider-interaction
-  :ensure t
-  :pin melpa-stable
-  :config
-  (add-hook 'cider-clojure-interaction-mode-hook
-            (lambda ()
-              (unbind-key "C-j" cider-clojure-interaction-mode-map)
-              (unbind-key "<remap> <paredit-newline>" cider-clojure-interaction-mode-map))))
-#+END_SRC
    
+*** compojure - [[https://github.com/weavejester/compojure/wiki][Github]]
+
+TODO: Their wiki mentiions it makes their macros look nicer, but I may have the config wrong as I'm not seeing it. 
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+    (use-package clojure-mode
+      :config
+      (define-clojure-indent
+        (defroutes 'defun)
+        (GET 2)
+        (POST 2)
+        (PUT 2)
+        (DELETE 2)
+        (HEAD 2)
+        (ANY 2)
+        (context 2)))
+#+END_SRC
+
 *** package clojure-snippets - [[https://github.com/mpenet/clojure-snippets][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-snippets
@@ -193,8 +199,8 @@ Clojure and supporting modules.
   (add-hook 'clojure-mode-hook    #'company-mode)
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
-  (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
-  (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+  ;;(add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
+  ;;(add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
   ;;(setq 
        ;; company-idle-delay nil ; never start completions automatically
        ;; company-minimum-prefix-length 0
