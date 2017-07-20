@@ -114,7 +114,6 @@ Clojure and supporting packages.
   (add-hook 'cider-mode-hook #'clj-refactor-mode)
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
-  :diminish subword-mode
   (setq cider-auto-select-error-buffer t
         cider-macroexpansion-print-metadata t
         cider-mode-line nil
@@ -592,19 +591,28 @@ TODO: Their wiki mentiions it makes their macros look nicer, but I may have the 
 #+END_SRC
 
 ** Themes
-*** setup disabled
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
   (add-to-list 'load-path "~/.emacs.d/themes")
 #+END_SRC
 
-*** zenburn
+*** base16-default-dark [[https://github.com/belak/base16-emacs][GitHub]]
+This theme is installed via =use-package=, but you can download and load from =~/.emacs.d/themes=
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package base16-theme
+  :ensure t
+  :config
+  (load-theme 'base16-default-dark t))
+#+END_SRC
+
+*** zenburn - disabled
 This is manually installed. You can find the theme [[https://raw.githubusercontent.com/bbatsov/zenburn-emacs/master/zenburn-theme.el][here]]
 
 The following config changes the default background colours to be slightly darker. 
 To view the overridden colors, load the init.el and load the minor =rainbow-mode=
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package rainbow-mode                   
   :ensure t)
 
@@ -613,30 +621,6 @@ To view the overridden colors, load the init.el and load the minor =rainbow-mode
     ("zenburn-bg+1"  . "#2F2F2F")
     ("zenburn-bg+2"  . "#3F3F3F")
     ("zenburn-bg+3"  . "#4F4F4F")))
-(load-theme 'zenburn t)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-;; creates a darker background and replaces greens with browns
-(defvar zenburn-override-colors-alist
-  '(("zenburn-bg-2"     . "#000000")
-    ("zenburn-bg-1"     . "#2B2B2B")
-    ("zenburn-bg-05"    . "#3F3F3F")
-    ("zenburn-bg"       . "#383838")
-    ("zenburn-bg+05"    . "#a9a9a9")
-    ("zenburn-bg+1"     . "#2F2F2F")
-    ("zenburn-bg+2"     . "#434343")
-    ("zenburn-bg+3"     . "#585858")
-    ("zenburn-yellow"   . "#F0DFAF")
-    ("zenburn-yellow-1" . "#E0CF9F")
-    ("zenburn-yellow-2" . "#e2d8bb") ;; lighter shade in minibuffer highlighting
-    ("zenburn-green-1"  . "#c3b17a") ;; changed the greens to browns
-    ("zenburn-green"    . "#bda96c")
-    ("zenburn-green+1"  . "#aa9861")
-    ("zenburn-green+2"  . "#978756")
-    ("zenburn-green+3"  . "#84764b")
-    ("zenburn-green+4"  . "#716540")
-    ("zenburn-cyan"     . "#d0c298"))) ;; changed cyan to light brown
 (load-theme 'zenburn t)
 #+END_SRC
 

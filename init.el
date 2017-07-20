@@ -53,8 +53,6 @@
  (add-hook 'cider-mode-hook #'clj-refactor-mode)
  (add-hook 'cider-repl-mode-hook #'company-mode)
  (add-hook 'cider-mode-hook #'company-mode)
- :diminish subword-mode
- :config
  (setq cider-auto-select-error-buffer t
        cider-macroexpansion-print-metadata t
        cider-mode-line nil
@@ -139,9 +137,10 @@
 
 (use-package neotree
   :ensure t
-  :config
+  :init
   (setq neo-smart-open t
         projectile-switch-project-action #'neotree-projectile-action)
+  :config
   (global-set-key [f8] 'neotree-toggle))
 
 (use-package aggressive-indent
@@ -365,18 +364,10 @@
          ("C-c v p" . magit-pull))
    :config (setq magit-save-repository-buffers 'dontask))
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(add-to-list 'load-path "~/.emacs.d/themes")
-
-(use-package rainbow-mode                   
-  :ensure t)
-
-(defvar zenburn-override-colors-alist
-  '(("zenburn-bg+05" . "#282828")
-    ("zenburn-bg+1"  . "#2F2F2F")
-    ("zenburn-bg+2"  . "#3F3F3F")
-    ("zenburn-bg+3"  . "#4F4F4F")))
-(load-theme 'zenburn t)
+(use-package base16-theme
+  :ensure t
+  :config
+  (load-theme 'base16-default-dark t))
 
 (use-package markdown-mode
   :ensure t)
@@ -422,3 +413,17 @@
 (set-terminal-coding-system 'utf-8)
 
 (prefer-coding-system 'utf-8)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (base16-theme which-key use-package rainbow-mode rainbow-delimiters paredit-everywhere no-littering neotree markdown-mode magit ivy-hydra htmlize highlight-parentheses expand-region counsel-projectile company clojure-snippets clj-refactor bm aggressive-indent ace-window ace-jump-mode))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
