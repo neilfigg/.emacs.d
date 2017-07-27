@@ -34,7 +34,7 @@
 
 (use-package clojure-mode
   :ensure t
-  :pin melpa-stable
+  ;;:pin melpa-stable
   :config
   (add-hook 'clojure-mode-hook #'clj-refactor-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
@@ -43,12 +43,20 @@
   ;;(add-hook 'clojure-mode-hook #'rainbow-delimeters-mode)
   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
-  :config
-  (outline-minor-mode 1))
+  (outline-minor-mode 1)
+      (define-clojure-indent
+        (defroutes 'defun)
+        (GET 2)
+        (POST 2)
+        (PUT 2)
+        (DELETE 2)
+        (HEAD 2)
+        (ANY 2)
+        (context 2)))
 
 (use-package cider
  :ensure t
- :pin melpa-stable
+ ;;:pin melpa-stable
  :config
  (add-hook 'cider-mode-hook #'clj-refactor-mode)
  (add-hook 'cider-repl-mode-hook #'company-mode)
@@ -74,7 +82,7 @@
 
 (use-package clj-refactor
   :ensure t
-  :pin melpa-stable
+  ;;:pin melpa-stable
   :commands
   enable-clj-refactor-mode
   :config
@@ -90,18 +98,6 @@
     (yas-minor-mode 1) ; for adding require/use/import statements
     (diminish 'clj-refactor-mode)
     (cljr-add-keybindings-with-prefix "C-c C-m")))
-
-(use-package clojure-mode
-  :config
-  (define-clojure-indent
-    (defroutes 'defun)
-    (GET 2)
-    (POST 2)
-    (PUT 2)
-    (DELETE 2)
-    (HEAD 2)
-    (ANY 2)
-    (context 2)))
 
 (use-package clojure-snippets
     :ensure t
@@ -413,17 +409,3 @@
 (set-terminal-coding-system 'utf-8)
 
 (prefer-coding-system 'utf-8)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (base16-theme which-key use-package rainbow-mode rainbow-delimiters paredit-everywhere no-littering neotree markdown-mode magit ivy-hydra htmlize highlight-parentheses expand-region counsel-projectile company clojure-snippets clj-refactor bm aggressive-indent ace-window ace-jump-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

@@ -30,10 +30,11 @@ Some packages are not being tangled =tangle no=
 I use [[http://www.luminusweb.net/][Luminus]] as my template when writing apps, and [[https://github.com/technomancy/leiningen][Leinengen]] to build, run and execute tests. The following =~/.lein/profiles.clj= configures Cider so that after I type =lein run= from my project root dir, from Emacs I can use =cider-connect= to connect to the REPL and debug the code.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-  {:repl {:plugins [[cider/cider-nrepl "0.14.0"]
-                    [refactor-nrepl "2.3.1"]]
-          :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]]}}
-          :dependencies [[org.clojure/tools.nrepl "0.2.12"]]}}
+ {:repl {:plugins [[cider/cider-nrepl "0.15.1-SNAPSHOT"]
+                  [refactor-nrepl "2.4.0-SNAPSHOT"]]
+         :dependencies [[alembic "0.3.2"]
+                       [org.clojure/tools.nrepl "0.2.13"]]
+         :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]]}}}}
 #+END_SRC
  
 ** Setup Packages
@@ -92,7 +93,7 @@ Clojure and supporting packages.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-mode
   :ensure t
-  :pin melpa-stable
+  ;;:pin melpa-stable
   :config
   (add-hook 'clojure-mode-hook #'clj-refactor-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
@@ -101,15 +102,23 @@ Clojure and supporting packages.
   ;;(add-hook 'clojure-mode-hook #'rainbow-delimeters-mode)
   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
-  :config
-  (outline-minor-mode 1))
+  (outline-minor-mode 1)
+      (define-clojure-indent
+        (defroutes 'defun)
+        (GET 2)
+        (POST 2)
+        (PUT 2)
+        (DELETE 2)
+        (HEAD 2)
+        (ANY 2)
+        (context 2)))
 #+END_SRC
 
 *** cider - [[https://github.com/clojure-emacs/cider][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
  (use-package cider
   :ensure t
-  :pin melpa-stable
+  ;;:pin melpa-stable
   :config
   (add-hook 'cider-mode-hook #'clj-refactor-mode)
   (add-hook 'cider-repl-mode-hook #'company-mode)
@@ -138,7 +147,7 @@ Clojure and supporting packages.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clj-refactor
   :ensure t
-  :pin melpa-stable
+  ;;:pin melpa-stable
   :commands
   enable-clj-refactor-mode
   :config
@@ -156,24 +165,6 @@ Clojure and supporting packages.
     (cljr-add-keybindings-with-prefix "C-c C-m")))
 #+END_SRC
    
-*** compojure - [[https://github.com/weavejester/compojure/wiki][Github]]
-
-TODO: Their wiki mentiions it makes their macros look nicer, but I may have the config wrong as I'm not seeing it. 
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-    (use-package clojure-mode
-      :config
-      (define-clojure-indent
-        (defroutes 'defun)
-        (GET 2)
-        (POST 2)
-        (PUT 2)
-        (DELETE 2)
-        (HEAD 2)
-        (ANY 2)
-        (context 2)))
-#+END_SRC
-
 *** package clojure-snippets - [[https://github.com/mpenet/clojure-snippets][GitHub]]
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package clojure-snippets
