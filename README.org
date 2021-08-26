@@ -1,3 +1,5 @@
+I now use https://github.com/bbatsov/prelude instead of my own .emacs.d
+
 This is my Clojure centric configuration file for GNU Emacs, using literal programming with org-babel.
 
 It is heavely influenced by ...
